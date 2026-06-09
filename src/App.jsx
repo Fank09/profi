@@ -833,7 +833,11 @@ function App() {
               <List size={24} weight="regular" />
             </button>
             <span className="mobile-nav__logo">
-              <img src="/images/logo-profi.png" alt="ProFi Logo" className="logo-profi__image" />
+              <img
+                src={`${import.meta.env.BASE_URL}images/logo-profi.png`}
+                alt="ProFi Logo"
+                className="logo-profi__image"
+              />
             </span>
           </div>
           <img className="avatar avatar--small" src={avatarUrl} alt="Marie Brown account" />
