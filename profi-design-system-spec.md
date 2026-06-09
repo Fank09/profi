@@ -119,7 +119,7 @@
   - States: `Default`, `Checked`
 
 ### Inputs
-- Present on root canvas under `Input` area (IDs visible in root metadata snippet).
+- Component node: `2893:2917`
 - Families visible in metadata:
   - `input`
   - `input-tag`
@@ -127,6 +127,18 @@
 - Common states observed across families:
   - `Default`, `Hover`, `Focus`, `Typing`, `Value Typed`, `Disabled`
   - Plus validation states: `Warning`, `Error` (by family)
+- Implementation spec for web app inputs:
+  - Text input/select height: `48px`
+  - Textarea height: `200px`
+  - Border: `1px solid #9EA2AE`
+  - Border radius: `16px`
+  - Hover background: none; keep the same background as default.
+  - Focus border remains `#9EA2AE`
+  - Focus ring: `0 0 1px 3px #E5E5E5`
+  - Label: `14px`, weight `500`, line-height `20px`
+  - Label height should remain natural `20px`; avoid grid/flex stretching labels in mixed-height rows.
+  - Helper text: `12px`, line-height `16px`, muted gray.
+  - Apply this spec consistently to `input`, `select`, `textarea`, and composed input wrappers.
 
 ## 5. Icon Sets
 

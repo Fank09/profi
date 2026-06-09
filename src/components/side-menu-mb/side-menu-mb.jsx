@@ -21,7 +21,12 @@ const mobileLinks = [
   { title: 'Account Setting', icon: NutIcon },
 ];
 
-export function SideMenuMb({ open, onClose }) {
+export function SideMenuMb({ open, onClose, onDashboardClick }) {
+  function handleDashboardClick(event) {
+    onDashboardClick?.(event);
+    onClose();
+  }
+
   return (
     <div className={`side-menu-mb${open ? ' side-menu-mb--open' : ''}`} aria-hidden={!open}>
       <button
@@ -41,7 +46,11 @@ export function SideMenuMb({ open, onClose }) {
 
         <nav className="sidebar__nav" aria-label="Mobile dashboard navigation">
           {mobileLinks.map((link) => (
-            <SideMenuLink key={link.title} {...link} onClick={onClose} />
+            <SideMenuLink
+              key={link.title}
+              {...link}
+              onClick={link.title === 'Dashboard' ? handleDashboardClick : onClose}
+            />
           ))}
         </nav>
 

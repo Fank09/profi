@@ -2,19 +2,27 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ArrowSquareOut,
   Briefcase,
+  CalendarBlank,
   CaretDown,
   CaretUp,
   CheckCircle,
   CircleDashed,
   ClockCounterClockwise,
+  EnvelopeSimple,
   FileText,
   GraduationCap,
   Heart,
+  LinkedinLogo,
   List,
   MapPin,
+  DotsThreeOutline,
   PencilSimple,
+  Phone,
+  Plus,
   Sparkle,
+  Trash,
   TrendUp,
+  UploadSimple,
   User,
   X,
 } from '@phosphor-icons/react';
@@ -53,6 +61,8 @@ const overviewCards = [
 
 const tabs = ['Basic Info', 'Work Experience', 'Education', 'Job Preferences'];
 
+const editProfileTabs = tabs;
+
 const personalDetails = [
   { label: 'Name', value: 'Marie Brown' },
   { label: 'Email', value: 'mail@email.com' },
@@ -64,6 +74,191 @@ const personalDetails = [
   { label: 'LINE ID', value: 'marielineid' },
   { label: 'LinkedIn', value: 'https://linkedin.com/in/mariebrown', link: true },
   { label: 'Driving License', value: 'Car   Motorcycle', tags: ['Car', 'Motorcycle'] },
+];
+
+const editProfileFields = [
+  {
+    label: 'Full Name',
+    required: true,
+    value: 'Marie Brown',
+  },
+  {
+    label: 'Email',
+    required: true,
+    value: 'mail@email.com',
+    helper: 'Email Contact - editable without verification',
+    icon: EnvelopeSimple,
+  },
+  {
+    label: 'Phone',
+    required: true,
+    value: '099-1234-4578',
+    icon: Phone,
+  },
+  {
+    label: 'Date of Birth',
+    value: '15/05/2000',
+    icon: CalendarBlank,
+  },
+];
+
+const genderOptions = ['Male', 'Female', 'Non-binary', 'Prefer not to say'];
+const drivingLicenseOptions = ['None', 'Car', 'Motorcycle', 'Heavy Vehicle'];
+
+const professionalSummary =
+  'Creative digital designer with experience in UI/UX, branding, and visual design across web and mobile platforms. Skilled at turning complex ideas into clean, user-friendly experiences with a strong eye for detail, usability, and modern aesthetics.';
+
+const latestCareerFields = [
+  { label: 'Latest Job Title', required: true, value: 'Product Designer', helper: 'By default - resume parsed from latest job title' },
+  { label: 'Latest Total Package', required: true, value: '50,000', suffix: 'THB' },
+  { label: 'Phone', required: true, value: '099-1234-4578', icon: Phone },
+  { label: 'Date of Birth', value: '15/05/2000', icon: CalendarBlank },
+  { label: 'Expected Minimum Salary', value: '100,000', suffix: 'THB' },
+];
+
+const editableWorkExperienceRows = [
+  {
+    title: 'Product Designer at Matel Co.,Ltd.',
+    meta: 'Jan 2025 - Current',
+  },
+  {
+    title: 'Digital Designer at Puzzle Co.,Ltd.',
+    meta: 'Feb 2023 - Jan 2025',
+  },
+];
+
+const editSkillTags = [
+  'UX Research',
+  'Web Development',
+  'Design Engineer',
+  'CSS',
+  'HTML',
+  'AI Agents',
+  'Codex',
+  'Claude',
+];
+
+const educationEditRows = [
+  {
+    title: "Master's Degree of Multimedia",
+    meta: 'Faculty of Technology • Wardiere University',
+    period: '2006 - 2010',
+    fields: [
+      { label: 'Education Level', required: true, value: "Master's Degree" },
+      { label: 'Institution / University', required: true, value: 'Wardiere University' },
+      { label: 'Faculty', value: 'Faculty of Technology' },
+      { label: 'Field of Study / Major', value: 'Multimedia' },
+      { label: 'Start Year', value: '2006' },
+      { label: 'End Year', value: '2010' },
+      { label: 'GPAX', value: '4.00' },
+    ],
+    awards: "2020 Dean's List honoree and Vice President of the ACM Student Chapter.",
+    description:
+      "I successfully completed a Master's Degree in Multimedia, specializing in digital design, interactive media, visual communication, and user experience. Throughout my academic journey, I honed my creative and technical skills.",
+  },
+  {
+    title: "Bachelor's Degree of Arts",
+    meta: 'Faculty of Arts • Chulalongkorn University',
+    period: '2000 - 2004',
+  },
+];
+
+const languageProficiencyFields = [
+  { label: 'English Level', required: true, value: 'Fluent' },
+  { label: 'TOEIC Score', value: '990' },
+];
+
+const editableLanguages = ['Japanese Conversational', 'French Fluent', 'Thai Native', 'Chinese Basic', 'Korean Professional Working'];
+
+const languageCertificationRows = [
+  {
+    title: 'IELTS',
+    meta: 'Year Obtained: 2020',
+    fields: [
+      { label: 'Certification / License', required: true, value: 'IELTS' },
+      { label: 'Year Obtained', value: '2020' },
+    ],
+  },
+  { title: 'JLPT', meta: 'Year Obtained: 2019' },
+  { title: 'HSK', meta: 'Year Obtained: 2015' },
+];
+
+const otherCertificationRows = [
+  {
+    title: 'Certificate of Multimedia',
+    meta: 'Box Hill Institute of Arts',
+    period: 'Year Obtained: 2019',
+    fields: [
+      { label: 'Certification / License', required: true, value: 'Certificate of Multimedia' },
+      { label: 'Issued By', value: 'Box Hill Institute of Arts' },
+      { label: 'Year Obtained', value: '2019' },
+    ],
+  },
+  {
+    title: 'Certificate of Business',
+    meta: 'Maplewood College',
+    period: 'Year Obtained: 2016',
+  },
+];
+
+const jobPreferenceChipGroups = [
+  {
+    key: 'jobSeekingStatus',
+    label: 'Job Seeking Status',
+    required: true,
+    helper: 'Select your current job seeking status.',
+    options: ['Actively looking', 'Open to offers', 'Not looking'],
+    initialSelected: ['Actively looking'],
+    multiple: false,
+  },
+  {
+    key: 'openToContract',
+    label: 'Open to contract?',
+    required: true,
+    helper: 'Select at least 1 type.',
+    options: ['Yes', 'No'],
+    initialSelected: ['Yes'],
+    multiple: false,
+  },
+  {
+    key: 'workMode',
+    label: 'Work Mode',
+    required: true,
+    helper: 'Select at least 1 preferred work mode.',
+    options: ['Onsite', 'Hybrid', 'Remote'],
+    initialSelected: ['Hybrid', 'Remote'],
+    multiple: true,
+  },
+  {
+    key: 'preferredEmploymentType',
+    label: 'Preferred Employment Type',
+    helper: 'Select at least 1 employment type.',
+    options: ['Full-time', 'Part-time', 'Contact', 'Freelance', 'Internship'],
+    initialSelected: ['Full-time', 'Part-time', 'Freelance'],
+    multiple: true,
+  },
+];
+
+const jobPreferenceSelectFields = [
+  {
+    label: 'Preferred Sub Role Category',
+    helper: 'Select all that apply',
+    chips: ['Engineering', 'Sales', 'Other'],
+    moreCount: 5,
+  },
+  {
+    label: 'Preferred Work Location',
+    required: true,
+    helper: 'Select at least 1 preferred work location.',
+    chips: ['Bangkok', 'Chonburi', 'Rayong'],
+    moreCount: 5,
+  },
+  {
+    label: 'Preferred Industry',
+    helper: 'Select at least 1 industry.',
+    chips: ['Engineering', 'Sales', 'Other'],
+    moreCount: 5,
+  },
 ];
 
 const careerDetails = [
@@ -233,6 +428,14 @@ const sectionCopyByTab = {
   },
 };
 
+const appBasePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const dashboardPath = `${appBasePath || ''}/`;
+const editProfilePath = `${appBasePath || ''}/edit-profile`;
+
+function isEditProfilePath() {
+  return window.location.pathname.replace(/\/$/, '') === editProfilePath.replace(/\/$/, '');
+}
+
 function getTabIcon(index) {
   if (index === 0) {
     return User;
@@ -272,7 +475,7 @@ function OverviewCard({ icon, iconTone, value, mobileValue, chipTone, label }) {
   );
 }
 
-function ProfileHero() {
+function ProfileHero({ onEditProfile }) {
   return (
     <section className="profile-hero" aria-label="Profile summary">
       <div className="profile-hero__identity">
@@ -289,7 +492,7 @@ function ProfileHero() {
           </div>
         </div>
       </div>
-      <button className="button button--primary" type="button">
+      <button className="button button--primary" type="button" onClick={onEditProfile}>
         <span className="button__icon">
           <PencilSimple size={16} weight="regular" />
         </span>
@@ -297,6 +500,567 @@ function ProfileHero() {
         <span className="button__mobile-label">Edit</span>
       </button>
     </section>
+  );
+}
+
+function RequiredMark() {
+  return (
+    <span className="required-mark" aria-hidden="true">
+      *
+    </span>
+  );
+}
+
+function FieldLabel({ children, required, hint }) {
+  return (
+    <label className="edit-field__label">
+      <span>
+        {children}
+        {required ? <RequiredMark /> : null}
+      </span>
+      {hint ? <small>{hint}</small> : null}
+    </label>
+  );
+}
+
+function TextInput({ label, required = false, value, helper, icon: Icon, suffix, placeholder }) {
+  const inputLabel = label || placeholder || value || 'Text input';
+
+  return (
+    <div className="edit-field">
+      {label ? <FieldLabel required={required}>{label}</FieldLabel> : null}
+      <div className="edit-input">
+        {Icon ? <Icon size={20} weight="regular" /> : null}
+        <input defaultValue={value} placeholder={placeholder} aria-label={inputLabel} />
+        {suffix ? <span className="edit-input__suffix">{suffix}</span> : null}
+      </div>
+      {helper ? <p className="edit-field__helper">{helper}</p> : null}
+    </div>
+  );
+}
+
+function SelectInput({ label, value, options = ['Japanese', 'Thai', 'American', 'British'] }) {
+  return (
+    <div className="edit-field">
+      <FieldLabel>{label}</FieldLabel>
+      <div className="edit-select-control">
+        <select className="edit-select" defaultValue={value} aria-label={label}>
+          {options.map((option) => (
+            <option value={option} key={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <CaretDown className="edit-select-control__icon" size={18} weight="regular" aria-hidden="true" />
+      </div>
+    </div>
+  );
+}
+
+function TextAreaInput({ label, required = false, value, helper }) {
+  return (
+    <div className="edit-field edit-field--full">
+      <FieldLabel required={required}>{label}</FieldLabel>
+      {helper ? <p className="edit-field__helper edit-field__helper--before">{helper}</p> : null}
+      <textarea aria-label={label} defaultValue={value} maxLength={1000} />
+      <span className="edit-character-count">0/1000</span>
+    </div>
+  );
+}
+
+function OptionChip({ children, selected = false, onToggle }) {
+  return (
+    <button
+      className={`select-chip${selected ? ' select-chip--selected' : ''}`}
+      type="button"
+      aria-pressed={selected}
+      onClick={onToggle}
+    >
+      {selected ? <CheckCircle size={16} weight="regular" /> : null}
+      {children}
+    </button>
+  );
+}
+
+function EditSectionTitle({ heading, description }) {
+  return (
+    <div className="edit-section-title">
+      <h2>{heading}</h2>
+      {description ? <p>{description}</p> : null}
+    </div>
+  );
+}
+
+function EditBlockTitle({ heading, description }) {
+  return (
+    <div className="edit-block-title">
+      <h3>{heading}</h3>
+      {description ? <p>{description}</p> : null}
+    </div>
+  );
+}
+
+function EditableDetailsCard({ children, className = '' }) {
+  return <article className={`edit-details-card${className ? ` ${className}` : ''}`}>{children}</article>;
+}
+
+function EditableListItem({ title, meta, period }) {
+  return (
+    <div className="edit-list-item">
+      <div>
+        <h4>{title}</h4>
+        {meta ? <p>{meta}</p> : null}
+        {period ? <p>{period}</p> : null}
+      </div>
+      <button className="edit-icon-action" type="button" aria-label={`More actions for ${title}`}>
+        <DotsThreeOutline size={18} weight="fill" />
+      </button>
+    </div>
+  );
+}
+
+function AddTextLink({ children }) {
+  return (
+    <button className="text-link edit-add-link" type="button">
+      <Plus size={16} weight="regular" />
+      {children}
+    </button>
+  );
+}
+
+function SelectChipField({ label, required, helper, options, selected, onToggle }) {
+  return (
+    <div className="edit-field edit-field--full">
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <div className="select-chip-row">
+        {options.map((option) => (
+          <OptionChip selected={selected.includes(option)} onToggle={() => onToggle(option)} key={option}>
+            {option}
+          </OptionChip>
+        ))}
+      </div>
+      {helper ? <p className="edit-field__helper">{helper}</p> : null}
+    </div>
+  );
+}
+
+function MultiSelectInput({ label, required = false, chips, moreCount, helper }) {
+  return (
+    <div className="edit-field edit-field--full">
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <div className="edit-select-chip-input" tabIndex={0} role="combobox" aria-label={label} aria-expanded="false">
+        <span className="edit-select-chip-input__chips">
+          {chips.map((chip) => (
+            <span className="mini-tag mini-tag--blue" key={chip}>
+              {chip}
+              <X size={10} weight="regular" aria-hidden="true" />
+            </span>
+          ))}
+          {moreCount ? <span className="edit-select-chip-input__more">+ {moreCount}</span> : null}
+        </span>
+        <CaretDown size={18} weight="regular" aria-hidden="true" />
+      </div>
+      {helper ? <p className="edit-field__helper">{helper}</p> : null}
+    </div>
+  );
+}
+
+function BasicInfoEditForm({
+  selectedGender,
+  setSelectedGender,
+  selectedLicenses,
+  toggleLicense,
+}) {
+  return (
+    <>
+      <EditSectionTitle heading="Basic Information" description="กรุณากรอกข้อมูลส่วนตัว" />
+
+      <div className="edit-upload-panel">
+        <div className="edit-upload-panel__avatar">
+          <img className="avatar avatar--edit" src={avatarUrl} alt="Marie Brown" />
+          <button className="button button--outline-primary" type="button">
+            Change
+          </button>
+        </div>
+
+        <div className="edit-field">
+          <FieldLabel required>Resume File</FieldLabel>
+          <div className="edit-resume-row">
+            <Chip label="Marie CV.pdf" tone="blue" icon={FileText} className="edit-resume-chip" />
+            <button className="text-link" type="button">
+              <UploadSimple size={16} weight="regular" />
+              Reupload Resume
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="edit-form-grid">
+        {editProfileFields.map((field) => (
+          <TextInput key={field.label} {...field} />
+        ))}
+
+        <div className="edit-field">
+          <FieldLabel>Gender</FieldLabel>
+          <div className="select-chip-row">
+            {genderOptions.map((option) => (
+              <OptionChip
+                selected={selectedGender === option}
+                onToggle={() => setSelectedGender(option)}
+                key={option}
+              >
+                {option}
+              </OptionChip>
+            ))}
+          </div>
+        </div>
+
+        <SelectInput label="Nationality" value="Japanese" />
+
+        <TextAreaInput label="Address" value="123 Sakura Lane, Tokyo, Japan" />
+
+        <TextInput
+          label="Line ID (แนะนำให้กรอก)"
+          value="marielineid"
+          helper="Used to contact you about job opportunities and related services. Additional consent may be requested later."
+        />
+
+        <div className="edit-field">
+          <FieldLabel>LinkedIn URL</FieldLabel>
+          <div className="edit-input">
+            <LinkedinLogo size={20} weight="regular" />
+            <input defaultValue="https://linkedin.com/in/mariebrown" aria-label="LinkedIn URL" />
+          </div>
+        </div>
+
+        <div className="edit-field edit-field--full">
+          <FieldLabel hint="(เลือกได้มากกว่า 1)">Driving License</FieldLabel>
+          <div className="select-chip-row">
+            {drivingLicenseOptions.map((option) => (
+              <OptionChip
+                selected={selectedLicenses.includes(option)}
+                onToggle={() => toggleLicense(option)}
+                key={option}
+              >
+                {option}
+              </OptionChip>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function WorkExperienceEditForm() {
+  return (
+    <>
+      <EditSectionTitle heading="Career & Work Experience" description="กรุณากรอกข้อมูลส่วนตัว" />
+
+      <EditableDetailsCard className="edit-details-card--padded">
+        <EditBlockTitle heading="Latest Career Details" description="Lorem Ipsum" />
+        <div className="edit-form-grid">
+          <TextAreaInput
+            label="Professional Summary"
+            helper="Brief summary of your background and strengths."
+            value={professionalSummary}
+          />
+          {latestCareerFields.map((field) => (
+            <TextInput key={field.label} {...field} />
+          ))}
+        </div>
+      </EditableDetailsCard>
+
+      <section className="edit-section-block">
+        <EditBlockTitle heading="Work Experience" description="Lorem" />
+        <EditableDetailsCard>
+          <div className="edit-list">
+            {editableWorkExperienceRows.map((item) => (
+              <EditableListItem key={item.title} {...item} />
+            ))}
+          </div>
+          <AddTextLink>add another work experience</AddTextLink>
+        </EditableDetailsCard>
+      </section>
+
+      <section className="edit-section-block">
+        <EditBlockTitle heading="Skills" description="เพิ่มทักษะที่เกี่ยวข้อง" />
+        <EditableDetailsCard className="edit-chip-card">
+          <h4>Added Skills</h4>
+          <div className="edit-chip-card__chips">
+            {editSkillTags.map((tag) => (
+              <span className="mini-tag mini-tag--blue" key={tag}>
+                {tag}
+                <X size={10} weight="regular" aria-hidden="true" />
+              </span>
+            ))}
+          </div>
+          <span className="edit-chip-card__count">8 / 50 skills</span>
+          <TextInput label="" placeholder="Search or type a skill" helper="Type a skill and press Enter" />
+        </EditableDetailsCard>
+      </section>
+
+      <section className="edit-section-block">
+        <EditBlockTitle heading="Portfolio URL" description="เพิ่มทักษะที่เกี่ยวข้อง" />
+        <EditableDetailsCard>
+          <div className="edit-url-row">
+            <TextInput label="" value="https://myportonline.com" />
+            <button className="edit-icon-action" type="button" aria-label="Remove portfolio link">
+              <Trash size={18} weight="regular" />
+            </button>
+          </div>
+          <AddTextLink>add another portfolio link</AddTextLink>
+        </EditableDetailsCard>
+      </section>
+    </>
+  );
+}
+
+function EducationEditForm() {
+  return (
+    <>
+      <EditSectionTitle heading="Education & Certifications" description="กรุณากรอกข้อมูลด้านประวัติการศึกษา" />
+
+      <section className="edit-section-block">
+        <EditableDetailsCard>
+          <EditableListItem {...educationEditRows[0]} />
+          <div className="edit-form-grid">
+            {educationEditRows[0].fields.map((field) => (
+              <TextInput key={field.label} {...field} />
+            ))}
+            <TextAreaInput label="Awards and Activities" value={educationEditRows[0].awards} />
+            <TextAreaInput label="Educational Description" value={educationEditRows[0].description} />
+          </div>
+        </EditableDetailsCard>
+        <EditableDetailsCard>
+          <EditableListItem {...educationEditRows[1]} />
+        </EditableDetailsCard>
+        <AddTextLink>add another education</AddTextLink>
+      </section>
+
+      <section className="edit-section-block">
+        <EditBlockTitle heading="Language Proficiency" description="Lorem" />
+        <EditableDetailsCard>
+          <div className="edit-form-grid">
+            {languageProficiencyFields.map((field) => (
+              <TextInput key={field.label} {...field} />
+            ))}
+          </div>
+          <div className="edit-field edit-field--full">
+            <FieldLabel>Other Languages</FieldLabel>
+            <div className="edit-chip-card__chips">
+              {editableLanguages.map((language) => (
+                <span className="mini-tag mini-tag--blue" key={language}>
+                  {language}
+                  <X size={10} weight="regular" aria-hidden="true" />
+                </span>
+              ))}
+            </div>
+            <AddTextLink>add another language</AddTextLink>
+          </div>
+        </EditableDetailsCard>
+      </section>
+
+      <section className="edit-section-block">
+        <EditBlockTitle heading="Certifications / Licenses" description="Lorem" />
+        <EditableDetailsCard>
+          <EditBlockTitle heading="Language Certifications" />
+          <div className="edit-list">
+            {languageCertificationRows.map((item, index) => (
+              <div className="edit-list-stack" key={item.title}>
+                <EditableListItem {...item} />
+                {index === 0 ? (
+                  <div className="edit-form-grid">
+                    {item.fields.map((field) => (
+                      <TextInput key={field.label} {...field} />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+          <AddTextLink>add another language certification</AddTextLink>
+        </EditableDetailsCard>
+      </section>
+
+      <section className="edit-section-block">
+        <EditBlockTitle heading="Other Certifications / Licenses" />
+        <EditableDetailsCard>
+          <div className="edit-list">
+            {otherCertificationRows.map((item, index) => (
+              <div className="edit-list-stack" key={item.title}>
+                <EditableListItem {...item} />
+                {index === 0 ? (
+                  <div className="edit-form-grid">
+                    {item.fields.map((field) => (
+                      <TextInput key={field.label} {...field} />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+          <AddTextLink>add another certification or license</AddTextLink>
+        </EditableDetailsCard>
+      </section>
+    </>
+  );
+}
+
+function JobPreferencesEditForm({ selectedJobPreferences, onToggleJobPreference }) {
+  return (
+    <>
+      <EditSectionTitle heading="Job Preferences & Visibility" description="กรุณากรอกข้อมูลด้านประวัติการศึกษา" />
+
+      <EditableDetailsCard className="edit-details-card--padded">
+        {jobPreferenceChipGroups.slice(0, 2).map((group) => (
+          <SelectChipField
+            key={group.key}
+            label={group.label}
+            required={group.required}
+            helper={group.helper}
+            options={group.options}
+            selected={selectedJobPreferences[group.key]}
+            onToggle={(option) => onToggleJobPreference(group, option)}
+          />
+        ))}
+
+        <MultiSelectInput {...jobPreferenceSelectFields[0]} />
+
+        <SelectChipField
+          label={jobPreferenceChipGroups[2].label}
+          required={jobPreferenceChipGroups[2].required}
+          helper={jobPreferenceChipGroups[2].helper}
+          options={jobPreferenceChipGroups[2].options}
+          selected={selectedJobPreferences.workMode}
+          onToggle={(option) => onToggleJobPreference(jobPreferenceChipGroups[2], option)}
+        />
+
+        {jobPreferenceSelectFields.slice(1).map((field) => (
+          <MultiSelectInput key={field.label} {...field} />
+        ))}
+
+        <SelectChipField
+          label={jobPreferenceChipGroups[3].label}
+          helper={jobPreferenceChipGroups[3].helper}
+          options={jobPreferenceChipGroups[3].options}
+          selected={selectedJobPreferences.preferredEmploymentType}
+          onToggle={(option) => onToggleJobPreference(jobPreferenceChipGroups[3], option)}
+        />
+      </EditableDetailsCard>
+    </>
+  );
+}
+
+function EditProfilePage({ onClose }) {
+  const [activeEditTab, setActiveEditTab] = useState('Basic Info');
+  const [selectedGender, setSelectedGender] = useState('Female');
+  const [selectedLicenses, setSelectedLicenses] = useState(['Car', 'Motorcycle']);
+  const [selectedJobPreferences, setSelectedJobPreferences] = useState(() =>
+    jobPreferenceChipGroups.reduce((selectedGroups, group) => {
+      selectedGroups[group.key] = group.initialSelected;
+      return selectedGroups;
+    }, {}),
+  );
+
+  function toggleLicense(option) {
+    setSelectedLicenses((currentLicenses) => {
+      if (option === 'None') {
+        return currentLicenses.includes('None') ? [] : ['None'];
+      }
+
+      if (currentLicenses.includes(option)) {
+        return currentLicenses.filter((license) => license !== option);
+      }
+
+      return [...currentLicenses.filter((license) => license !== 'None'), option];
+    });
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    onClose();
+  }
+
+  function toggleJobPreference(group, option) {
+    setSelectedJobPreferences((currentPreferences) => {
+      const selectedOptions = currentPreferences[group.key] || [];
+
+      if (!group.multiple) {
+        return {
+          ...currentPreferences,
+          [group.key]: [option],
+        };
+      }
+
+      return {
+        ...currentPreferences,
+        [group.key]: selectedOptions.includes(option)
+          ? selectedOptions.filter((selectedOption) => selectedOption !== option)
+          : [...selectedOptions, option],
+      };
+    });
+  }
+
+  return (
+    <form className="edit-profile-page" aria-label="Edit profile" onSubmit={handleSubmit}>
+      <section className="edit-profile-card">
+        <header className="edit-profile-card__header">
+          <h1>Edit Profile</h1>
+          <button className="button button--primary" type="submit">
+            Save
+          </button>
+        </header>
+
+        <div className="tab-list edit-tab-list" aria-label="Edit profile sections">
+          {editProfileTabs.map((tab, index) => {
+            const TabIcon = getTabIcon(index);
+
+            return (
+              <button
+                className={`tab${activeEditTab === tab ? ' tab--active' : ''}`}
+                key={tab}
+                type="button"
+                onClick={() => setActiveEditTab(tab)}
+              >
+                <span aria-hidden="true">
+                  <TabIcon size={16} weight="regular" />
+                </span>
+                {tab}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="edit-tab-panel">
+          {activeEditTab === 'Basic Info' ? (
+            <BasicInfoEditForm
+              selectedGender={selectedGender}
+              setSelectedGender={setSelectedGender}
+              selectedLicenses={selectedLicenses}
+              toggleLicense={toggleLicense}
+            />
+          ) : null}
+          {activeEditTab === 'Work Experience' ? <WorkExperienceEditForm /> : null}
+          {activeEditTab === 'Education' ? <EducationEditForm /> : null}
+          {activeEditTab === 'Job Preferences' ? (
+            <JobPreferencesEditForm
+              selectedJobPreferences={selectedJobPreferences}
+              onToggleJobPreference={toggleJobPreference}
+            />
+          ) : null}
+        </div>
+      </section>
+
+      <footer className="edit-profile-actions">
+        <button className="button button--outline-neutral" type="button" onClick={onClose}>
+          Cancel
+        </button>
+        <button className="button button--primary" type="submit">
+          Save
+        </button>
+      </footer>
+    </form>
   );
 }
 
@@ -357,7 +1121,7 @@ function ProfileDetails() {
       <div className="section-heading">
         <h3>{activeSection.heading}</h3>
         <button type="button" aria-label={activeSection.editLabel}>
-          <PencilSimple size={16} weight="regular" />
+          <PencilSimple className="section-heading__icon" size={24} weight="regular" />
         </button>
       </div>
 
@@ -787,6 +1551,34 @@ function StrengthPanel() {
 
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(() => isEditProfilePath());
+
+  function navigateToDashboard() {
+    setEditingProfile(false);
+    window.history.pushState(null, '', dashboardPath);
+  }
+
+  function navigateToEditProfile() {
+    setEditingProfile(true);
+    window.history.pushState(null, '', editProfilePath);
+  }
+
+  function handleDashboardClick(event) {
+    event?.preventDefault();
+    navigateToDashboard();
+  }
+
+  useEffect(() => {
+    function handlePopState() {
+      setEditingProfile(isEditProfilePath());
+    }
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     document.body.classList.toggle('is-menu-open', mobileMenuOpen);
@@ -816,8 +1608,12 @@ function App() {
 
   return (
     <div className="app-shell">
-      <SideMenu />
-      <SideMenuMb open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      <SideMenu onDashboardClick={handleDashboardClick} />
+      <SideMenuMb
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        onDashboardClick={handleDashboardClick}
+      />
 
       <main className="content" id="dashboard">
         <nav className="top-nav" aria-label="Account">
@@ -843,20 +1639,26 @@ function App() {
           <img className="avatar avatar--small" src={avatarUrl} alt="Marie Brown account" />
         </nav>
 
-        <ProfileHero />
+        {editingProfile ? (
+          <EditProfilePage onClose={navigateToDashboard} />
+        ) : (
+          <>
+            <ProfileHero onEditProfile={navigateToEditProfile} />
 
-        <section className="overview-grid" aria-label="Profile status">
-          {overviewCards.map((card) => (
-            <OverviewCard key={card.label} {...card} />
-          ))}
-        </section>
+            <section className="overview-grid" aria-label="Profile status">
+              {overviewCards.map((card) => (
+                <OverviewCard key={card.label} {...card} />
+              ))}
+            </section>
 
-        <AiInterviewBanner />
+            <AiInterviewBanner />
 
-        <div className="profile-layout">
-          <ProfileDetails />
-          <StrengthPanel />
-        </div>
+            <div className="profile-layout">
+              <ProfileDetails />
+              <StrengthPanel />
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

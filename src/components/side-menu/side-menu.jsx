@@ -21,7 +21,7 @@ const links = [
   { title: 'Account Setting', icon: NutIcon },
 ];
 
-export function SideMenu() {
+export function SideMenu({ onDashboardClick }) {
   return (
     <aside className="sidebar" aria-label="Primary">
       <div className="sidebar__top">
@@ -33,7 +33,11 @@ export function SideMenu() {
 
       <nav className="sidebar__nav" aria-label="Dashboard navigation">
         {links.map((link) => (
-          <SideMenuLink key={link.title} {...link} />
+          <SideMenuLink
+            key={link.title}
+            {...link}
+            onClick={link.title === 'Dashboard' ? onDashboardClick : undefined}
+          />
         ))}
       </nav>
 
