@@ -1,0 +1,113 @@
+{
+  "source": {
+    "file_url": "https://www.figma.com/design/D12qa6BgRKjclRmibTEKEb/ProFi",
+    "file_key": "D12qa6BgRKjclRmibTEKEb",
+    "root_node_id": "2843:1541",
+    "generated_date": "2026-05-12"
+  },
+  "typography": {
+    "node_id": "2853:1689",
+    "font_family": ["Noto Sans Thai", "Noto Sans"],
+    "styles": {
+      "h1": {"weight": 700, "size": 48, "line_height": 64},
+      "h2": {"weight": 700, "size": 32, "line_height": 48},
+      "h3": {"weight": 700, "size": 24, "line_height": 40},
+      "h4": {"weight": 700, "size": 20, "line_height": 32},
+      "title_large": {"weight": 700, "size": 18, "line_height": 32},
+      "title": {"weight": 700, "size": 16, "line_height": 24},
+      "title_small": {"weight": 700, "size": 14, "line_height": 16},
+      "label_large": {"weight": 600, "size": 18, "line_height": "auto"},
+      "label": {"weight": 600, "size": 16, "line_height": "auto"},
+      "label_small": {"weight": 600, "size": 14, "line_height": "auto"},
+      "label_tiny": {"weight": 600, "size": 12, "line_height": "auto"},
+      "body_large": {"weight": 400, "size": 18, "line_height": 32},
+      "body": {"weight": 400, "size": 16, "line_height": 24},
+      "body_small": {"weight": 400, "size": 14, "line_height": 20},
+      "body_tiny": {"weight": 400, "size": 12, "line_height": 16},
+      "button_large": {"weight": 600, "size": 18, "line_height": "auto"},
+      "button": {"weight": 600, "size": 16, "line_height": "auto"},
+      "button_small": {"weight": 600, "size": 14, "line_height": "auto"},
+      "link_large": {"weight": 600, "size": 18, "line_height": "auto"},
+      "link": {"weight": 600, "size": 16, "line_height": "auto"},
+      "link_small": {"weight": 600, "size": 14, "line_height": "auto"}
+    }
+  },
+  "colors": {
+    "node_id": "2877:1725",
+    "primary": {
+      "900": "#0D2D4A",
+      "800": "#124069",
+      "700": "#175287",
+      "600": "#1D65A6",
+      "500": "#2277C4",
+      "400": "#388EDC",
+      "300": "#5FA4E3",
+      "200": "#86BAEA",
+      "100": "#A9CEF0",
+      "50": "#CBE2F6"
+    },
+    "secondary": {
+      "900": "#13605A",
+      "800": "#187E76",
+      "700": "#1E9C92",
+      "600": "#24B9AE",
+      "500": "#2BD6C9",
+      "400": "#51DDD3",
+      "300": "#78E5DD",
+      "200": "#9EECE6",
+      "100": "#C1F3EF",
+      "50": "#E3FAF8"
+    },
+    "semantic_families": ["black_alpha", "white_alpha", "gray", "success_green", "error_red", "warning_yellow", "info_blue"]
+  },
+  "spacing": {
+    "node_id": "2893:4420",
+    "base": "8px",
+    "steps": [
+      {"px": 8, "rem": 0.5},
+      {"px": 16, "rem": 1},
+      {"px": 24, "rem": 1.5},
+      {"px": 32, "rem": 2},
+      {"px": 40, "rem": 2.5},
+      {"px": 48, "rem": 3},
+      {"px": 56, "rem": 3.5},
+      {"px": 64, "rem": 3.5},
+      {"px": 72, "rem": 4},
+      {"px": 80, "rem": 5},
+      {"px": 96, "rem": 6}
+    ]
+  },
+  "components": {
+    "buttons": {
+      "node_id": "2893:3865",
+      "styles": ["fill", "outlined"],
+      "sizes": ["large", "default", "small"],
+      "states": ["default_active", "hover", "focus", "disabled"],
+      "min_width": {"large": 150, "default": 120, "small": 80}
+    },
+    "badge_chip_radio_checkbox": {
+      "node_id": "2893:4251",
+      "badge_styles": ["fill", "outline"],
+      "badge_sizes": ["default", "small"],
+      "badge_states": ["default_active", "hover_focus"],
+      "badge_min_width": {"default": 64, "small": 56},
+      "radio_states": ["default", "checked"],
+      "checkbox_states": ["default", "checked"]
+    },
+    "inputs": {
+      "families": ["input", "input-tag", "text-area"],
+      "states_common": ["default", "hover", "focus", "typing", "value_typed", "disabled"],
+      "states_validation": ["warning", "error"]
+    }
+  },
+  "icons": {
+    "node_id": "2893:3462",
+    "ui_set": "Phosphor Regular",
+    "social_set": "Font Awesome"
+  },
+  "logos": {
+    "node_id": "2893:4502",
+    "families": ["logo-profi", "logo-profinder"],
+    "variants": ["color", "gradient", "black", "white"]
+  }
+}
