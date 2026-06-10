@@ -5,6 +5,7 @@ import {
   CalendarBlank,
   CaretDown,
   CaretUp,
+  Check,
   CheckCircle,
   CircleDashed,
   ClockCounterClockwise,
@@ -179,8 +180,22 @@ const languageCertificationRows = [
       { label: 'Year Obtained', value: '2020' },
     ],
   },
-  { title: 'JLPT', meta: 'Year Obtained: 2019' },
-  { title: 'HSK', meta: 'Year Obtained: 2015' },
+  {
+    title: 'JLPT',
+    meta: 'Year Obtained: 2019',
+    fields: [
+      { label: 'Certification / License', required: true, value: 'JLPT' },
+      { label: 'Year Obtained', value: '2019' },
+    ],
+  },
+  {
+    title: 'HSK',
+    meta: 'Year Obtained: 2015',
+    fields: [
+      { label: 'Certification / License', required: true, value: 'HSK' },
+      { label: 'Year Obtained', value: '2015' },
+    ],
+  },
 ];
 
 const otherCertificationRows = [
@@ -198,6 +213,11 @@ const otherCertificationRows = [
     title: 'Certificate of Business',
     meta: 'Maplewood College',
     period: 'Year Obtained: 2016',
+    fields: [
+      { label: 'Certification / License', required: true, value: 'Certificate of Business' },
+      { label: 'Issued By', value: 'Maplewood College' },
+      { label: 'Year Obtained', value: '2016' },
+    ],
   },
 ];
 
@@ -244,6 +264,7 @@ const jobPreferenceSelectFields = [
     label: 'Preferred Sub Role Category',
     helper: 'Select all that apply',
     chips: ['Engineering', 'Sales', 'Other'],
+    options: ['Engineering', 'Sales', 'Other', 'Technology', 'Finance', 'Design', 'Marketing', 'Product'],
     moreCount: 5,
   },
   {
@@ -251,12 +272,14 @@ const jobPreferenceSelectFields = [
     required: true,
     helper: 'Select at least 1 preferred work location.',
     chips: ['Bangkok', 'Chonburi', 'Rayong'],
+    options: ['Bangkok', 'Chonburi', 'Rayong', 'Chiang Mai', 'Phuket', 'Remote', 'Singapore', 'Tokyo'],
     moreCount: 5,
   },
   {
     label: 'Preferred Industry',
     helper: 'Select at least 1 industry.',
     chips: ['Engineering', 'Sales', 'Other'],
+    options: ['Engineering', 'Sales', 'Other', 'Technology', 'Finance', 'Healthcare', 'Education', 'Retail'],
     moreCount: 5,
   },
 ];
@@ -523,16 +546,98 @@ function FieldLabel({ children, required, hint }) {
   );
 }
 
-function TextInput({ label, required = false, value, helper, icon: Icon, suffix, placeholder }) {
+const datePickerDays = Array.from({ length: 30 }, (_, index) => index + 1);
+
+function DatePickerPopover({ onSelect }) {
+  return (
+    <div className="date-picker" role="dialog" aria-label="Choose date" onClick={(event) => event.stopPropagation()}>
+      <div className="date-picker__header">
+        <button type="button" aria-label="Previous month">
+          <CaretDown size={14} weight="regular" />
+        </button>
+        <strong>September 2025</strong>
+        <button type="button" aria-label="Next month">
+          <CaretDown size={14} weight="regular" />
+        </button>
+      </div>
+      <div className="date-picker__weekdays" aria-hidden="true">
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+          <span key={`${day}-${index}`}>{day}</span>
+        ))}
+      </div>
+      <div className="date-picker__grid">
+        {datePickerDays.map((day) => (
+          <button
+            className={day === 10 ? 'date-picker__day date-picker__day--selected' : 'date-picker__day'}
+            type="button"
+            key={day}
+            onClick={() => onSelect(`Sep ${day}, 2025`)}
+          >
+            {day}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TextInput({
+  label,
+  required = false,
+  value,
+  helper,
+  icon: Icon,
+  suffix,
+  placeholder,
+  disabled = false,
+  datePicker = false,
+}) {
   const inputLabel = label || placeholder || value || 'Text input';
+  const [inputValue, setInputValue] = useState(value || '');
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (disabled) {
+      setDatePickerOpen(false);
+    }
+  }, [disabled]);
+
+  function openDatePicker() {
+    if (disabled || !datePicker) {
+      return;
+    }
+
+    setDatePickerOpen(true);
+  }
 
   return (
     <div className="edit-field">
       {label ? <FieldLabel required={required}>{label}</FieldLabel> : null}
-      <div className="edit-input">
+      <div
+        className={`edit-input${disabled ? ' edit-input--disabled' : ''}${datePicker ? ' edit-input--date' : ''}`}
+        onClick={openDatePicker}
+      >
         {Icon ? <Icon size={20} weight="regular" /> : null}
-        <input defaultValue={value} placeholder={placeholder} aria-label={inputLabel} />
+        <input
+          ref={inputRef}
+          value={inputValue}
+          placeholder={placeholder}
+          aria-label={inputLabel}
+          disabled={disabled}
+          readOnly={datePicker}
+          onChange={(event) => setInputValue(event.target.value)}
+          onFocus={openDatePicker}
+        />
         {suffix ? <span className="edit-input__suffix">{suffix}</span> : null}
+        {datePickerOpen ? (
+          <DatePickerPopover
+            onSelect={(selectedDate) => {
+              setInputValue(selectedDate);
+              setDatePickerOpen(false);
+            }}
+          />
+        ) : null}
       </div>
       {helper ? <p className="edit-field__helper">{helper}</p> : null}
     </div>
@@ -604,17 +709,230 @@ function EditableDetailsCard({ children, className = '' }) {
   return <article className={`edit-details-card${className ? ` ${className}` : ''}`}>{children}</article>;
 }
 
-function EditableListItem({ title, meta, period }) {
+function EditActionMenu({ label }) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (!menuRef.current?.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
   return (
-    <div className="edit-list-item">
-      <div>
-        <h4>{title}</h4>
-        {meta ? <p>{meta}</p> : null}
-        {period ? <p>{period}</p> : null}
-      </div>
-      <button className="edit-icon-action" type="button" aria-label={`More actions for ${title}`}>
+    <div
+      className="edit-action-menu"
+      ref={menuRef}
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+    >
+      <button
+        className="edit-icon-action"
+        type="button"
+        aria-label={`More actions for ${label}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={(event) => {
+          event.stopPropagation();
+          setOpen((currentOpen) => !currentOpen);
+        }}
+      >
         <DotsThreeOutline size={18} weight="fill" />
       </button>
+      {open ? (
+        <div className="edit-action-dropdown" role="menu" onClick={(event) => event.stopPropagation()}>
+          <button
+            className="edit-action-dropdown__item edit-action-dropdown__item--delete"
+            type="button"
+            role="menuitem"
+            onClick={(event) => {
+              event.stopPropagation();
+              setOpen(false);
+            }}
+          >
+            <Trash size={16} weight="regular" />
+            Delete
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function parseExperienceTitle(title) {
+  const [role, company] = title.split(' at ');
+
+  return {
+    role: role || title,
+    company: company || 'Company Name',
+  };
+}
+
+function DesignCheckbox({ label, checked, onChange }) {
+  return (
+    <label className="checkbox-field">
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+      <span className="checkbox-field__box" aria-hidden="true">
+        {checked ? <Check size={12} weight="bold" /> : null}
+      </span>
+      <span>{label}</span>
+    </label>
+  );
+}
+
+function EditableItemExpandedDetails({ item, type = 'default' }) {
+  const experienceTitle = parseExperienceTitle(item.title);
+  const [currentlyWorking, setCurrentlyWorking] = useState(true);
+
+  if (type === 'work') {
+    return (
+      <div className="edit-list-item__details">
+        <div className="edit-form-grid">
+          <TextInput label="Job Title" value={experienceTitle.role} />
+          <TextInput label="Company Name" value={experienceTitle.company} />
+        </div>
+        <TextAreaInput
+          label="Responsibility"
+          value={`• Collaborate with the broader development team to oversee website design, content management, SEO strategies, branding, and logo creation.
+• Work together with the development team to handle website design, manage content, come up with SEO strategies, and create branding and logos.
+• Team up with the dev crew to design the website, manage content, brainstorm SEO ideas, and whip up some cool branding and logos.`}
+        />
+        <MultiSelectInput
+          label="Experience Industry"
+          helper="Select all that apply"
+          chips={['Engineering', 'Sales', 'Other']}
+          moreCount={5}
+        />
+        <MultiSelectInput
+          label="Role Category"
+          helper="Select all that apply"
+          chips={['Technology', 'Finance', 'Other']}
+          moreCount={5}
+        />
+        <MultiSelectInput
+          label="Subroles"
+          helper="Filtered by role category above"
+          chips={['Civil Engineer', 'Developer']}
+          moreCount={5}
+        />
+        <div className="edit-form-grid">
+          <TextInput label="Start Date" value="Sep 2025" icon={CalendarBlank} datePicker />
+          <TextInput
+            label="End Date"
+            placeholder="End date"
+            icon={CalendarBlank}
+            disabled={currentlyWorking}
+            datePicker={!currentlyWorking}
+          />
+        </div>
+        <DesignCheckbox
+          label="I currently work here"
+          checked={currentlyWorking}
+          onChange={setCurrentlyWorking}
+        />
+      </div>
+    );
+  }
+
+  if (item.fields?.length) {
+    return (
+      <div className="edit-list-item__details">
+        <div className="edit-form-grid">
+          {item.fields.map((field) => (
+            <TextInput key={field.label} {...field} />
+          ))}
+        </div>
+        {item.awards ? <TextAreaInput label="Awards and Activities" value={item.awards} /> : null}
+        {item.description ? <TextAreaInput label="Description" value={item.description} /> : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="edit-list-item__details">
+      <div className="edit-form-grid">
+        <TextInput label="Title" value={item.title} />
+        <TextInput label="Organization" value={item.meta || 'Organization Name'} />
+      </div>
+      <TextAreaInput
+        label="Description"
+        value="Demo editable details for this card. Update the title, organization, related notes, and dates using the same current input styling."
+      />
+      <div className="edit-form-grid">
+        <TextInput label="Start Date" value={item.period?.split(' - ')[0] || 'Jan 2024'} icon={CalendarBlank} datePicker />
+        <TextInput label="End Date" value={item.period?.split(' - ')[1] || 'Current'} icon={CalendarBlank} datePicker />
+      </div>
+    </div>
+  );
+}
+
+function EditableListItem({
+  title,
+  meta,
+  period,
+  card = false,
+  detailType = 'default',
+  fields,
+  awards,
+  description,
+  expanded = false,
+  onToggle,
+}) {
+  const item = { title, meta, period, fields, awards, description };
+
+  function toggleExpanded() {
+    onToggle?.();
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleExpanded();
+    }
+  }
+
+  return (
+    <div
+      className={`edit-list-item${card ? ' edit-list-item--card' : ''}${expanded ? ' edit-list-item--expanded' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-expanded={expanded}
+      onClick={toggleExpanded}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="edit-list-item__summary">
+        <div>
+          <h4>{title}</h4>
+          {meta ? <p>{meta}</p> : null}
+          {period ? <p>{period}</p> : null}
+        </div>
+        <EditActionMenu label={title} />
+      </div>
+      {expanded ? (
+        <div onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
+          <EditableItemExpandedDetails item={item} type={detailType} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -644,21 +962,75 @@ function SelectChipField({ label, required, helper, options, selected, onToggle 
   );
 }
 
-function MultiSelectInput({ label, required = false, chips, moreCount, helper }) {
+function MultiSelectInput({ label, required = false, chips, options, helper }) {
+  const dropdownOptions = options || chips;
+  const [selectedChips, setSelectedChips] = useState(chips);
+  const [open, setOpen] = useState(false);
+  const visibleChipLimit = 3;
+  const visibleChips = selectedChips.slice(0, visibleChipLimit);
+  const hiddenChipCount = Math.max(selectedChips.length - visibleChipLimit, 0);
+
+  function toggleOption(option) {
+    setSelectedChips((currentChips) =>
+      currentChips.includes(option)
+        ? currentChips.filter((chip) => chip !== option)
+        : [...currentChips, option],
+    );
+  }
+
+  function removeChip(option) {
+    setSelectedChips((currentChips) => currentChips.filter((chip) => chip !== option));
+  }
+
   return (
     <div className="edit-field edit-field--full">
       <FieldLabel required={required}>{label}</FieldLabel>
-      <div className="edit-select-chip-input" tabIndex={0} role="combobox" aria-label={label} aria-expanded="false">
+      <div className="edit-select-chip-input" role="combobox" aria-label={label} aria-expanded={open}>
         <span className="edit-select-chip-input__chips">
-          {chips.map((chip) => (
+          {visibleChips.map((chip) => (
             <span className="mini-tag mini-tag--blue" key={chip}>
               {chip}
-              <X size={10} weight="regular" aria-hidden="true" />
+              <button
+                className="mini-tag__remove"
+                type="button"
+                aria-label={`Remove ${chip}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  removeChip(chip);
+                }}
+              >
+                <X size={10} weight="regular" aria-hidden="true" />
+              </button>
             </span>
           ))}
-          {moreCount ? <span className="edit-select-chip-input__more">+ {moreCount}</span> : null}
+          {hiddenChipCount ? <span className="edit-select-chip-input__more">+ {hiddenChipCount}</span> : null}
         </span>
-        <CaretDown size={18} weight="regular" aria-hidden="true" />
+        <button
+          className="edit-select-chip-input__arrow"
+          type="button"
+          aria-label={`Toggle ${label} options`}
+          aria-expanded={open}
+          onClick={() => setOpen((currentOpen) => !currentOpen)}
+        >
+          <CaretDown size={18} weight="regular" aria-hidden="true" />
+        </button>
+        {open ? (
+          <div className="edit-select-dropdown" role="listbox" aria-label={`${label} options`}>
+            {dropdownOptions.map((option) => (
+              <button
+                className={`edit-select-dropdown__option${selectedChips.includes(option) ? ' edit-select-dropdown__option--selected' : ''}`}
+                type="button"
+                role="option"
+                aria-selected={selectedChips.includes(option)}
+                key={option}
+                onClick={() => toggleOption(option)}
+              >
+                <span>{option}</span>
+                {selectedChips.includes(option) ? <Check size={14} weight="bold" /> : null}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
       {helper ? <p className="edit-field__helper">{helper}</p> : null}
     </div>
@@ -753,6 +1125,8 @@ function BasicInfoEditForm({
 }
 
 function WorkExperienceEditForm() {
+  const [expandedWorkItem, setExpandedWorkItem] = useState(null);
+
   return (
     <>
       <EditSectionTitle heading="Career & Work Experience" description="กรุณากรอกข้อมูลส่วนตัว" />
@@ -773,14 +1147,21 @@ function WorkExperienceEditForm() {
 
       <section className="edit-section-block">
         <EditBlockTitle heading="Work Experience" description="Lorem" />
-        <EditableDetailsCard>
-          <div className="edit-list">
-            {editableWorkExperienceRows.map((item) => (
-              <EditableListItem key={item.title} {...item} />
-            ))}
-          </div>
-          <AddTextLink>add another work experience</AddTextLink>
-        </EditableDetailsCard>
+        <div className="edit-list">
+          {editableWorkExperienceRows.map((item) => (
+            <EditableListItem
+              key={item.title}
+              card
+              detailType="work"
+              expanded={expandedWorkItem === item.title}
+              onToggle={() =>
+                setExpandedWorkItem((currentItem) => (currentItem === item.title ? null : item.title))
+              }
+              {...item}
+            />
+          ))}
+        </div>
+        <AddTextLink>add another work experience</AddTextLink>
       </section>
 
       <section className="edit-section-block">
@@ -817,23 +1198,36 @@ function WorkExperienceEditForm() {
 }
 
 function EducationEditForm() {
+  const [expandedEducationItem, setExpandedEducationItem] = useState(null);
+  const [expandedLanguageCertification, setExpandedLanguageCertification] = useState(null);
+  const [expandedOtherCertification, setExpandedOtherCertification] = useState(null);
+
   return (
     <>
       <EditSectionTitle heading="Education & Certifications" description="กรุณากรอกข้อมูลด้านประวัติการศึกษา" />
 
       <section className="edit-section-block">
         <EditableDetailsCard>
-          <EditableListItem {...educationEditRows[0]} />
-          <div className="edit-form-grid">
-            {educationEditRows[0].fields.map((field) => (
-              <TextInput key={field.label} {...field} />
-            ))}
-            <TextAreaInput label="Awards and Activities" value={educationEditRows[0].awards} />
-            <TextAreaInput label="Educational Description" value={educationEditRows[0].description} />
-          </div>
+          <EditableListItem
+            {...educationEditRows[0]}
+            expanded={expandedEducationItem === educationEditRows[0].title}
+            onToggle={() =>
+              setExpandedEducationItem((currentItem) =>
+                currentItem === educationEditRows[0].title ? null : educationEditRows[0].title,
+              )
+            }
+          />
         </EditableDetailsCard>
         <EditableDetailsCard>
-          <EditableListItem {...educationEditRows[1]} />
+          <EditableListItem
+            {...educationEditRows[1]}
+            expanded={expandedEducationItem === educationEditRows[1].title}
+            onToggle={() =>
+              setExpandedEducationItem((currentItem) =>
+                currentItem === educationEditRows[1].title ? null : educationEditRows[1].title,
+              )
+            }
+          />
         </EditableDetailsCard>
         <AddTextLink>add another education</AddTextLink>
       </section>
@@ -846,7 +1240,7 @@ function EducationEditForm() {
               <TextInput key={field.label} {...field} />
             ))}
           </div>
-          <div className="edit-field edit-field--full">
+          <div className="edit-field edit-field--full edit-language-chips-field">
             <FieldLabel>Other Languages</FieldLabel>
             <div className="edit-chip-card__chips">
               {editableLanguages.map((language) => (
@@ -863,45 +1257,43 @@ function EducationEditForm() {
 
       <section className="edit-section-block">
         <EditBlockTitle heading="Certifications / Licenses" description="Lorem" />
-        <EditableDetailsCard>
-          <EditBlockTitle heading="Language Certifications" />
-          <div className="edit-list">
-            {languageCertificationRows.map((item, index) => (
-              <div className="edit-list-stack" key={item.title}>
-                <EditableListItem {...item} />
-                {index === 0 ? (
-                  <div className="edit-form-grid">
-                    {item.fields.map((field) => (
-                      <TextInput key={field.label} {...field} />
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-          <AddTextLink>add another language certification</AddTextLink>
-        </EditableDetailsCard>
+        <EditBlockTitle heading="Language Certifications" />
+        <div className="edit-list">
+          {languageCertificationRows.map((item) => (
+            <EditableListItem
+              key={item.title}
+              card
+              {...item}
+              expanded={expandedLanguageCertification === item.title}
+              onToggle={() =>
+                setExpandedLanguageCertification((currentItem) =>
+                  currentItem === item.title ? null : item.title,
+                )
+              }
+            />
+          ))}
+        </div>
+        <AddTextLink>add another language certification</AddTextLink>
       </section>
 
       <section className="edit-section-block">
         <EditBlockTitle heading="Other Certifications / Licenses" />
-        <EditableDetailsCard>
-          <div className="edit-list">
-            {otherCertificationRows.map((item, index) => (
-              <div className="edit-list-stack" key={item.title}>
-                <EditableListItem {...item} />
-                {index === 0 ? (
-                  <div className="edit-form-grid">
-                    {item.fields.map((field) => (
-                      <TextInput key={field.label} {...field} />
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-          <AddTextLink>add another certification or license</AddTextLink>
-        </EditableDetailsCard>
+        <div className="edit-list">
+          {otherCertificationRows.map((item) => (
+            <EditableListItem
+              key={item.title}
+              card
+              {...item}
+              expanded={expandedOtherCertification === item.title}
+              onToggle={() =>
+                setExpandedOtherCertification((currentItem) =>
+                  currentItem === item.title ? null : item.title,
+                )
+              }
+            />
+          ))}
+        </div>
+        <AddTextLink>add another certification or license</AddTextLink>
       </section>
     </>
   );
@@ -952,9 +1344,51 @@ function JobPreferencesEditForm({ selectedJobPreferences, onToggleJobPreference 
   );
 }
 
+function SaveToast({ message }) {
+  return (
+    <div className="save-toast" role="status" aria-live="polite">
+      <span className="save-toast__content">
+        <CheckCircle size={20} weight="regular" />
+        {message}
+      </span>
+      <X className="save-toast__close" size={16} weight="bold" aria-hidden="true" />
+    </div>
+  );
+}
+
+function DiscardChangesModal({ onClose, onDiscard }) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="discard-modal" role="dialog" aria-modal="true" aria-labelledby="discard-modal-title">
+        <button className="discard-modal__close" type="button" aria-label="Close discard dialog" onClick={onClose}>
+          <X size={18} weight="bold" />
+        </button>
+        <div className="discard-modal__icon" aria-hidden="true">
+          <FileText size={34} weight="regular" />
+          <span>!</span>
+        </div>
+        <div className="discard-modal__copy">
+          <h2 id="discard-modal-title">Discard your changes?</h2>
+          <p>Your edits will not be saved if you leave now.</p>
+        </div>
+        <div className="discard-modal__actions">
+          <button className="discard-modal__text-action text-link text-link--black" type="button" onClick={onClose}>
+            Go back
+          </button>
+          <button className="button button--primary" type="button" onClick={onDiscard}>
+            Discard
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function EditProfilePage({ onClose }) {
   const [activeEditTab, setActiveEditTab] = useState('Basic Info');
   const [selectedGender, setSelectedGender] = useState('Female');
+  const [discardModalOpen, setDiscardModalOpen] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
   const [selectedLicenses, setSelectedLicenses] = useState(['Car', 'Motorcycle']);
   const [selectedJobPreferences, setSelectedJobPreferences] = useState(() =>
     jobPreferenceChipGroups.reduce((selectedGroups, group) => {
@@ -977,9 +1411,23 @@ function EditProfilePage({ onClose }) {
     });
   }
 
+  useEffect(() => {
+    if (!toastVisible) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setToastVisible(false);
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [toastVisible]);
+
   function handleSubmit(event) {
     event.preventDefault();
-    onClose();
+    setToastVisible(true);
   }
 
   function toggleJobPreference(group, option) {
@@ -1003,64 +1451,67 @@ function EditProfilePage({ onClose }) {
   }
 
   return (
-    <form className="edit-profile-page" aria-label="Edit profile" onSubmit={handleSubmit}>
-      <section className="edit-profile-card">
-        <header className="edit-profile-card__header">
-          <h1>Edit Profile</h1>
+    <>
+      {toastVisible ? <SaveToast message="Save changes successfully" /> : null}
+      <form className="edit-profile-page" aria-label="Edit profile" onSubmit={handleSubmit}>
+        <section className="edit-profile-card">
+          <header className="edit-profile-card__header">
+            <h1>Edit Profile</h1>
+          </header>
+
+          <div className="tab-list edit-tab-list" aria-label="Edit profile sections">
+            {editProfileTabs.map((tab, index) => {
+              const TabIcon = getTabIcon(index);
+
+              return (
+                <button
+                  className={`tab${activeEditTab === tab ? ' tab--active' : ''}`}
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveEditTab(tab)}
+                >
+                  <span aria-hidden="true">
+                    <TabIcon size={16} weight="regular" />
+                  </span>
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="edit-tab-panel">
+            {activeEditTab === 'Basic Info' ? (
+              <BasicInfoEditForm
+                selectedGender={selectedGender}
+                setSelectedGender={setSelectedGender}
+                selectedLicenses={selectedLicenses}
+                toggleLicense={toggleLicense}
+              />
+            ) : null}
+            {activeEditTab === 'Work Experience' ? <WorkExperienceEditForm /> : null}
+            {activeEditTab === 'Education' ? <EducationEditForm /> : null}
+            {activeEditTab === 'Job Preferences' ? (
+              <JobPreferencesEditForm
+                selectedJobPreferences={selectedJobPreferences}
+                onToggleJobPreference={toggleJobPreference}
+              />
+            ) : null}
+          </div>
+        </section>
+
+        <footer className="edit-profile-actions">
+          <button className="button button--outline-neutral" type="button" onClick={() => setDiscardModalOpen(true)}>
+            Cancel
+          </button>
           <button className="button button--primary" type="submit">
             Save
           </button>
-        </header>
-
-        <div className="tab-list edit-tab-list" aria-label="Edit profile sections">
-          {editProfileTabs.map((tab, index) => {
-            const TabIcon = getTabIcon(index);
-
-            return (
-              <button
-                className={`tab${activeEditTab === tab ? ' tab--active' : ''}`}
-                key={tab}
-                type="button"
-                onClick={() => setActiveEditTab(tab)}
-              >
-                <span aria-hidden="true">
-                  <TabIcon size={16} weight="regular" />
-                </span>
-                {tab}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="edit-tab-panel">
-          {activeEditTab === 'Basic Info' ? (
-            <BasicInfoEditForm
-              selectedGender={selectedGender}
-              setSelectedGender={setSelectedGender}
-              selectedLicenses={selectedLicenses}
-              toggleLicense={toggleLicense}
-            />
-          ) : null}
-          {activeEditTab === 'Work Experience' ? <WorkExperienceEditForm /> : null}
-          {activeEditTab === 'Education' ? <EducationEditForm /> : null}
-          {activeEditTab === 'Job Preferences' ? (
-            <JobPreferencesEditForm
-              selectedJobPreferences={selectedJobPreferences}
-              onToggleJobPreference={toggleJobPreference}
-            />
-          ) : null}
-        </div>
-      </section>
-
-      <footer className="edit-profile-actions">
-        <button className="button button--outline-neutral" type="button" onClick={onClose}>
-          Cancel
-        </button>
-        <button className="button button--primary" type="submit">
-          Save
-        </button>
-      </footer>
-    </form>
+        </footer>
+      </form>
+      {discardModalOpen ? (
+        <DiscardChangesModal onClose={() => setDiscardModalOpen(false)} onDiscard={onClose} />
+      ) : null}
+    </>
   );
 }
 
@@ -1608,9 +2059,10 @@ function App() {
 
   return (
     <div className="app-shell">
-      <SideMenu onDashboardClick={handleDashboardClick} />
+      <SideMenu profileActive={editingProfile} onDashboardClick={handleDashboardClick} />
       <SideMenuMb
         open={mobileMenuOpen}
+        profileActive={editingProfile}
         onClose={() => setMobileMenuOpen(false)}
         onDashboardClick={handleDashboardClick}
       />

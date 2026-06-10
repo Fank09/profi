@@ -21,7 +21,7 @@ const mobileLinks = [
   { title: 'Account Setting', icon: NutIcon },
 ];
 
-export function SideMenuMb({ open, onClose, onDashboardClick }) {
+export function SideMenuMb({ open, profileActive = false, onClose, onDashboardClick }) {
   function handleDashboardClick(event) {
     onDashboardClick?.(event);
     onClose();
@@ -49,6 +49,7 @@ export function SideMenuMb({ open, onClose, onDashboardClick }) {
             <SideMenuLink
               key={link.title}
               {...link}
+              active={link.title === 'Profile' ? profileActive : link.title === 'Dashboard' && !profileActive}
               onClick={link.title === 'Dashboard' ? handleDashboardClick : onClose}
             />
           ))}

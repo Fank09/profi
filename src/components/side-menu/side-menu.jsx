@@ -21,7 +21,7 @@ const links = [
   { title: 'Account Setting', icon: NutIcon },
 ];
 
-export function SideMenu({ onDashboardClick }) {
+export function SideMenu({ profileActive = false, onDashboardClick }) {
   return (
     <aside className="sidebar" aria-label="Primary">
       <div className="sidebar__top">
@@ -36,6 +36,7 @@ export function SideMenu({ onDashboardClick }) {
           <SideMenuLink
             key={link.title}
             {...link}
+            active={link.title === 'Profile' ? profileActive : link.title === 'Dashboard' && !profileActive}
             onClick={link.title === 'Dashboard' ? onDashboardClick : undefined}
           />
         ))}
