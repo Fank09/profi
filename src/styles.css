@@ -41,6 +41,8 @@
 html {
   color-scheme: light;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -1242,6 +1244,19 @@ dl {
   background: var(--primary);
 }
 
+@media (hover: none) and (pointer: coarse) {
+  input,
+  select,
+  textarea,
+  .edit-input,
+  .edit-select-control,
+  .edit-field textarea,
+  .edit-select,
+  .edit-input input {
+    font-size: 16px;
+  }
+}
+
 .edit-add-link {
   justify-self: start;
   font-size: 14px;
@@ -1664,6 +1679,38 @@ dl {
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 16px;
+}
+
+.resume-chip-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 4px 16px;
+  color: var(--primary);
+  background: var(--light-blue);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  white-space: nowrap;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+.resume-chip-button svg {
+  display: block;
+  flex: none;
+}
+
+.resume-chip-button:hover,
+.resume-chip-button:focus-visible {
+  color: var(--primary-600);
+  background: var(--primary-soft);
+  outline: none;
 }
 
 .details-card h4 {
@@ -2531,7 +2578,15 @@ dl {
   .edit-select-control,
   .edit-field textarea {
     border-radius: var(--radius-lg);
-    font-size: 14px;
+    font-size: 16px;
+  }
+
+  .edit-select,
+  .edit-input input,
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 
   .select-chip {
@@ -2706,13 +2761,19 @@ dl {
     min-width: 0;
   }
 
-  .details-card .button--mint {
+  .details-card .resume-chip-button {
     flex: 0 1 auto;
     max-width: calc(100% - 84px);
     min-height: 24px;
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 12px;
+    line-height: 16px;
     white-space: nowrap;
+  }
+
+  .details-card .resume-chip-button svg {
+    width: 12px;
+    height: 12px;
   }
 
   .details-grid {

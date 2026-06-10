@@ -1592,7 +1592,7 @@ function BasicInfoDetails() {
       </div>
       <div className="details-card__profile-row">
         <img className="avatar avatar--medium" src={avatarUrl} alt="" />
-        <button className="button button--mint" type="button">
+        <button className="resume-chip-button" type="button">
           <FileText size={14} weight="regular" />
           View my resume
         </button>
