@@ -386,7 +386,7 @@ dl {
 }
 
 .content {
-  width: min(100%, var(--content-width));
+  width: 100%;
   padding: 0 32px 64px;
 }
 
@@ -1915,6 +1915,312 @@ dl {
   gap: 16px;
 }
 
+.ai-interview-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-interview-page__header {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.ai-interview-page__header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.assessments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.assessments-page__header {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.assessments-page__header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.assessments-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  min-height: 184px;
+  padding: 32px;
+  background: linear-gradient(90deg, #e7f6ff 0%, #f1dfff 100%);
+  border-radius: var(--radius-lg);
+}
+
+.assessments-hero__icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  color: var(--primary);
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.assessments-hero__copy {
+  display: grid;
+  gap: 8px;
+  max-width: 520px;
+}
+
+.assessments-hero__copy .chip {
+  width: fit-content;
+}
+
+.assessments-hero h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.assessments-hero p {
+  color: var(--muted-strong);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.assessments-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.assessments-summary-card {
+  background: var(--surface);
+}
+
+.assessments-list {
+  display: grid;
+  gap: 12px;
+}
+
+.assessment-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.assessment-card__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: 50%;
+}
+
+.assessment-card__body {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.assessment-card__header {
+  display: block;
+  min-width: 0;
+}
+
+.assessment-card__heading {
+  display: grid;
+  gap: 4px;
+}
+
+.assessment-card__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.assessment-card__title-row .chip {
+  flex: none;
+}
+
+.assessment-card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.assessment-card__header span,
+.assessment-card p {
+  color: var(--muted-strong);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.profile-views-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-views-page__header {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.profile-views-page__header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.profile-views-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  min-height: 184px;
+  padding: 32px;
+  background: linear-gradient(90deg, #e7f6ff 0%, #f1dfff 100%);
+  border-radius: var(--radius-lg);
+}
+
+.profile-views-hero__icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  color: var(--primary);
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.profile-views-hero__copy {
+  display: grid;
+  gap: 8px;
+  max-width: 520px;
+}
+
+.profile-views-hero__copy .chip {
+  width: fit-content;
+}
+
+.profile-views-hero h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.profile-views-hero p {
+  color: var(--muted-strong);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.profile-views-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-views-summary-card {
+  background: var(--surface);
+}
+
+.profile-viewers-card {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.profile-viewers-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-viewers-card__header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.profile-viewers-card__header p {
+  margin-top: 4px;
+  color: var(--muted-strong);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.profile-viewers-list {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-viewer-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.profile-viewer-row__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: 50%;
+}
+
+.profile-viewer-row__body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-viewer-row__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-viewer-row h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.profile-viewer-row p,
+.profile-viewer-row span {
+  color: var(--muted-strong);
+  font-size: 14px;
+  line-height: 20px;
+}
+
 .account-setting-page {
   display: flex;
   flex-direction: column;
@@ -1929,7 +2235,8 @@ dl {
 }
 
 .account-setting-page__header h1 {
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: 600;
   line-height: 32px;
 }
 
@@ -3077,6 +3384,264 @@ dl {
     font-size: 18px;
   }
 
+  .ai-interview-page {
+    gap: 12px;
+  }
+
+  .ai-interview-page__header {
+    min-height: 32px;
+  }
+
+  .ai-interview-page__header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+
+  .ai-interview-page .ai-banner--page {
+    align-items: center;
+    min-height: 236px;
+    margin-top: 0;
+    padding: 32px 24px 28px;
+    text-align: center;
+  }
+
+  .ai-interview-page .ai-banner--page .icon-bubble {
+    position: static;
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+
+  .ai-interview-page .ai-banner--page .ai-banner__copy {
+    max-width: 280px;
+    padding-left: 0;
+  }
+
+  .ai-interview-page .ai-banner--page h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .ai-interview-page .ai-banner--page p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .ai-interview-page .ai-banner--page .button {
+    min-height: 40px;
+    margin-left: 0;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+
+  .ai-interview-page .ai-banner--page .ai-banner__close {
+    width: 20px;
+    height: 20px;
+  }
+
+  .assessments-page {
+    gap: 12px;
+  }
+
+  .assessments-page__header {
+    min-height: 32px;
+  }
+
+  .assessments-page__header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+
+  .assessments-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-height: 280px;
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .assessments-hero__icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .assessments-hero__copy {
+    justify-items: center;
+    max-width: 286px;
+  }
+
+  .assessments-hero h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .assessments-hero p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .assessments-hero .button {
+    min-height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+
+  .assessments-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .assessments-summary-card {
+    min-height: 83px;
+    padding: 16px;
+  }
+
+  .assessment-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .assessment-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .assessment-card h2 {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .assessment-card__header span,
+  .assessment-card p {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .assessment-card > .button {
+    grid-column: 2;
+    justify-self: start;
+    min-height: 32px;
+    padding: 0 16px;
+    font-size: 12px;
+  }
+
+  .profile-views-page {
+    gap: 12px;
+  }
+
+  .profile-views-page__header {
+    min-height: 32px;
+  }
+
+  .profile-views-page__header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+
+  .profile-views-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-height: 280px;
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .profile-views-hero__icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .profile-views-hero__copy {
+    justify-items: center;
+    max-width: 286px;
+  }
+
+  .profile-views-hero h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .profile-views-hero p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .profile-views-hero .button {
+    min-height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+
+  .profile-views-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .profile-views-summary-card {
+    min-height: 83px;
+    padding: 16px;
+  }
+
+  .profile-viewers-card {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .profile-viewers-card__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-viewers-card__header h2 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .profile-viewers-card__header p {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .profile-viewer-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .profile-viewer-row__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .profile-viewer-row h3 {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .profile-viewer-row p,
+  .profile-viewer-row span {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .profile-viewer-row > .button {
+    grid-column: 2;
+    justify-self: start;
+    min-height: 32px;
+    padding: 0 16px;
+    font-size: 12px;
+  }
+
   .profile-layout {
     display: flex;
     flex-direction: column;
@@ -3099,8 +3664,9 @@ dl {
   }
 
   .account-setting-page__header h1 {
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
   }
 
   .settings-card {

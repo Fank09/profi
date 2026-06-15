@@ -24,9 +24,15 @@ const links = [
 
 export function SideMenu({
   profileActive = false,
+  aiInterviewActive = false,
+  assessmentsActive = false,
+  profileViewsActive = false,
   accountSettingActive = false,
   onDashboardClick,
   onProfileClick,
+  onAiInterviewClick,
+  onAssessmentsClick,
+  onProfileViewsClick,
   onAccountSettingClick,
 }) {
   const [activeLanguage, setActiveLanguage] = useState('TH');
@@ -48,15 +54,32 @@ export function SideMenu({
             active={
               link.title === 'Profile'
                 ? profileActive
+                : link.title === 'AI Interview'
+                  ? aiInterviewActive
+                : link.title === 'Assessments'
+                  ? assessmentsActive
+                : link.title === 'Profile Views'
+                  ? profileViewsActive
                 : link.title === 'Account Setting'
                   ? accountSettingActive
-                  : link.title === 'Dashboard' && !profileActive && !accountSettingActive
+                  : link.title === 'Dashboard' &&
+                    !profileActive &&
+                    !aiInterviewActive &&
+                    !assessmentsActive &&
+                    !profileViewsActive &&
+                    !accountSettingActive
             }
             onClick={
               link.title === 'Dashboard'
                 ? onDashboardClick
                 : link.title === 'Profile'
                   ? onProfileClick
+                  : link.title === 'AI Interview'
+                    ? onAiInterviewClick
+                  : link.title === 'Assessments'
+                    ? onAssessmentsClick
+                  : link.title === 'Profile Views'
+                    ? onProfileViewsClick
                   : link.title === 'Account Setting'
                     ? onAccountSettingClick
                     : undefined

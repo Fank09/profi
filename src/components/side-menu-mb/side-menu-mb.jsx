@@ -25,10 +25,16 @@ const mobileLinks = [
 export function SideMenuMb({
   open,
   profileActive = false,
+  aiInterviewActive = false,
+  assessmentsActive = false,
+  profileViewsActive = false,
   accountSettingActive = false,
   onClose,
   onDashboardClick,
   onProfileClick,
+  onAiInterviewClick,
+  onAssessmentsClick,
+  onProfileViewsClick,
   onAccountSettingClick,
 }) {
   const [activeLanguage, setActiveLanguage] = useState('TH');
@@ -40,6 +46,21 @@ export function SideMenuMb({
 
   function handleProfileClick(event) {
     onProfileClick?.(event);
+    onClose();
+  }
+
+  function handleAiInterviewClick(event) {
+    onAiInterviewClick?.(event);
+    onClose();
+  }
+
+  function handleAssessmentsClick(event) {
+    onAssessmentsClick?.(event);
+    onClose();
+  }
+
+  function handleProfileViewsClick(event) {
+    onProfileViewsClick?.(event);
     onClose();
   }
 
@@ -73,15 +94,32 @@ export function SideMenuMb({
               active={
                 link.title === 'Profile'
                   ? profileActive
+                  : link.title === 'AI Interview'
+                    ? aiInterviewActive
+                  : link.title === 'Assessments'
+                    ? assessmentsActive
+                  : link.title === 'Profile Views'
+                    ? profileViewsActive
                   : link.title === 'Account Setting'
                     ? accountSettingActive
-                    : link.title === 'Dashboard' && !profileActive && !accountSettingActive
+                    : link.title === 'Dashboard' &&
+                      !profileActive &&
+                      !aiInterviewActive &&
+                      !assessmentsActive &&
+                      !profileViewsActive &&
+                      !accountSettingActive
               }
               onClick={
                 link.title === 'Dashboard'
                   ? handleDashboardClick
                   : link.title === 'Profile'
                     ? handleProfileClick
+                    : link.title === 'AI Interview'
+                      ? handleAiInterviewClick
+                    : link.title === 'Assessments'
+                      ? handleAssessmentsClick
+                    : link.title === 'Profile Views'
+                      ? handleProfileViewsClick
                     : link.title === 'Account Setting'
                       ? handleAccountSettingClick
                       : onClose

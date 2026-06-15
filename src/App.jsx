@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowSquareOut,
+  BookOpenTextIcon,
   Briefcase,
   CalendarBlank,
   CaretDown,
@@ -109,6 +110,18 @@ const editProfileFields = [
 
 const genderOptions = ['Male', 'Female', 'Non-binary', 'Prefer not to say'];
 const drivingLicenseOptions = ['None', 'Car', 'Motorcycle', 'Heavy Vehicle'];
+const nationalityOptions = [
+  'Japanese',
+  'Thai',
+  'American',
+  'British',
+  'Chinese',
+  'French',
+  'Italian',
+  'Singaporean',
+  'Korean',
+  'Australian',
+];
 const educationLevelOptions = [
   'Bachlor Degree',
   'Master Degree',
@@ -564,6 +577,9 @@ const sectionCopyByTab = {
 const appBasePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const dashboardPath = `${appBasePath || ''}/`;
 const profilePath = `${appBasePath || ''}/profile`;
+const aiInterviewPath = `${appBasePath || ''}/ai-interview`;
+const assessmentsPath = `${appBasePath || ''}/assessments`;
+const profileViewsPath = `${appBasePath || ''}/profile-views`;
 const accountSettingPath = `${appBasePath || ''}/account-setting`;
 const editProfilePath = `${appBasePath || ''}/edit-profile`;
 const editProfileTabSlugs = {
@@ -585,6 +601,18 @@ function isProfilePath() {
   return window.location.pathname.replace(/\/$/, '') === profilePath.replace(/\/$/, '');
 }
 
+function isAiInterviewPath() {
+  return window.location.pathname.replace(/\/$/, '') === aiInterviewPath.replace(/\/$/, '');
+}
+
+function isAssessmentsPath() {
+  return window.location.pathname.replace(/\/$/, '') === assessmentsPath.replace(/\/$/, '');
+}
+
+function isProfileViewsPath() {
+  return window.location.pathname.replace(/\/$/, '') === profileViewsPath.replace(/\/$/, '');
+}
+
 function isAccountSettingPath() {
   return window.location.pathname.replace(/\/$/, '') === accountSettingPath.replace(/\/$/, '');
 }
@@ -596,6 +624,18 @@ function getCurrentAppPage() {
 
   if (isProfilePath()) {
     return 'profile';
+  }
+
+  if (isAiInterviewPath()) {
+    return 'ai-interview';
+  }
+
+  if (isAssessmentsPath()) {
+    return 'assessments';
+  }
+
+  if (isProfileViewsPath()) {
+    return 'profile-views';
   }
 
   if (isAccountSettingPath()) {
@@ -1512,7 +1552,7 @@ function BasicInfoEditForm({
           </div>
         </div>
 
-        <SelectInput label="Nationality" value="Japanese" />
+        <SelectInput label="Nationality" value="Japanese" options={nationalityOptions} />
 
         <TextAreaInput label="Address" value="123 Sakura Lane, Tokyo, Japan" />
 
@@ -2812,9 +2852,14 @@ function EditProfilePage({ initialTab = 'Basic Info', onClose }) {
   );
 }
 
-function AiInterviewBanner() {
+function AiInterviewBanner({ variant = 'default' }) {
+  const isPageVariant = variant === 'page';
+
   return (
-    <section className="ai-banner" aria-label="AI interview practice">
+    <section
+      className={`ai-banner${isPageVariant ? ' ai-banner--page' : ''}`}
+      aria-label="AI interview practice"
+    >
       <button className="ai-banner__close" type="button" aria-label="Dismiss AI interview prompt">
         <X size={14} weight="regular" />
       </button>
@@ -2822,20 +2867,233 @@ function AiInterviewBanner() {
       <div className="ai-banner__copy">
         <h2>
           <span className="desktop-copy">Boost Your Confidence with AI Interview Practice</span>
-          <span className="mobile-copy">Try AI Interview</span>
+          <span className="mobile-copy">
+            {isPageVariant ? 'Boost Your Confidence with AI Interview Practice' : 'Try AI Interview'}
+          </span>
         </h2>
         <p>
           <span className="desktop-copy">
             Practice with AI-generated interview questions tailored to your role and experience.
           </span>
           <span className="mobile-copy">
-            Answer a few questions and let companies get to know you better.
+            {isPageVariant
+              ? 'Practice with AI-generated interview questions tailored to your role and experience.'
+              : 'Answer a few questions and let companies get to know you better.'}
           </span>
         </p>
       </div>
       <button className="button button--gradient" type="button">
         Start AI Interview
       </button>
+    </section>
+  );
+}
+
+function AiInterviewPage() {
+  return (
+    <section className="ai-interview-page" aria-labelledby="ai-interview-title">
+      <div className="ai-interview-page__header">
+        <h1 id="ai-interview-title">AI Interview (Demo)</h1>
+      </div>
+      <AiInterviewBanner variant="page" />
+    </section>
+  );
+}
+
+const assessmentCards = [
+  {
+    title: 'UX/UI Design Assessment',
+    meta: '20 questions • 25 min',
+    description: 'Measure your product thinking, interface design judgement, and practical UX workflow.',
+    status: 'Recommended',
+    tone: 'blue',
+  },
+  {
+    title: 'Frontend Fundamentals',
+    meta: '18 questions • 20 min',
+    description: 'Show employers your strength in responsive layout, accessibility, and web implementation.',
+    status: 'Ready',
+    tone: 'green',
+  },
+  {
+    title: 'Communication Style',
+    meta: '12 questions • 10 min',
+    description: 'Highlight how you explain ideas, collaborate with teams, and handle feedback.',
+    status: 'Optional',
+    tone: 'neutral',
+  },
+];
+
+function AssessmentsPage() {
+  return (
+    <section className="assessments-page" aria-labelledby="assessments-title">
+      <header className="assessments-page__header">
+        <h1 id="assessments-title">Assessments (Demo)</h1>
+      </header>
+
+      <section className="assessments-hero" aria-label="Assessments overview">
+        <div className="assessments-hero__icon">
+          <BookOpenTextIcon size={32} weight="regular" />
+        </div>
+        <div className="assessments-hero__copy">
+          <Chip label="Coming soon" tone="blue" />
+          <h2>Stand out with verified skills</h2>
+          <p>
+            Complete short assessments to help companies understand your strengths before the first interview.
+          </p>
+        </div>
+        <button className="button button--gradient" type="button">
+          Start Assessment
+        </button>
+      </section>
+
+      <section className="assessments-summary-grid" aria-label="Assessment progress">
+        <article className="overview-card assessments-summary-card">
+          <div className="overview-card__copy">
+            <Chip label="0" tone="blue" />
+            Completed
+          </div>
+        </article>
+        <article className="overview-card assessments-summary-card">
+          <div className="overview-card__copy">
+            <Chip label="3" tone="green" />
+            Available
+          </div>
+        </article>
+        <article className="overview-card assessments-summary-card">
+          <div className="overview-card__copy">
+            <Chip label="+15%" tone="purple" />
+            Profile boost
+          </div>
+        </article>
+      </section>
+
+      <section className="assessments-list" aria-label="Available assessments">
+        {assessmentCards.map((assessment) => (
+          <article className="assessment-card" key={assessment.title}>
+            <div className="assessment-card__icon" aria-hidden="true">
+              <BookOpenTextIcon size={24} weight="regular" />
+            </div>
+            <div className="assessment-card__body">
+              <div className="assessment-card__header">
+                <div className="assessment-card__heading">
+                  <div className="assessment-card__title-row">
+                    <h2>{assessment.title}</h2>
+                    <Chip label={assessment.status} tone={assessment.tone} />
+                  </div>
+                  <span>{assessment.meta}</span>
+                </div>
+              </div>
+              <p>{assessment.description}</p>
+            </div>
+            <button className="button button--outline-neutral" type="button">
+              View details
+            </button>
+          </article>
+        ))}
+      </section>
+    </section>
+  );
+}
+
+const profileViewers = [
+  {
+    company: 'Siam Digital Studio',
+    role: 'Product Design Team',
+    time: 'Viewed 2 hours ago',
+    status: 'New',
+    tone: 'blue',
+  },
+  {
+    company: 'Bluewave Technology',
+    role: 'Frontend Hiring Manager',
+    time: 'Viewed yesterday',
+    status: 'Interested',
+    tone: 'green',
+  },
+  {
+    company: 'Northstar Creative',
+    role: 'Talent Acquisition',
+    time: 'Viewed 3 days ago',
+    status: 'Recruiter',
+    tone: 'purple',
+  },
+];
+
+function ProfileViewsPage() {
+  return (
+    <section className="profile-views-page" aria-labelledby="profile-views-title">
+      <header className="profile-views-page__header">
+        <h1 id="profile-views-title">Profile Views (Demo)</h1>
+      </header>
+
+      <section className="profile-views-hero" aria-label="Profile views overview">
+        <div className="profile-views-hero__icon">
+          <FileText size={32} weight="regular" />
+        </div>
+        <div className="profile-views-hero__copy">
+          <Chip label="Updated today" tone="green" />
+          <h2>See who viewed your profile</h2>
+          <p>
+            Track profile activity and understand which companies are paying attention to your experience.
+          </p>
+        </div>
+        <button className="button button--gradient" type="button">
+          Improve Profile
+        </button>
+      </section>
+
+      <section className="profile-views-summary-grid" aria-label="Profile views summary">
+        <article className="overview-card profile-views-summary-card">
+          <div className="overview-card__copy">
+            <Chip label="128" tone="blue" />
+            Total views
+          </div>
+        </article>
+        <article className="overview-card profile-views-summary-card">
+          <div className="overview-card__copy">
+            <Chip label="24" tone="green" />
+            This week
+          </div>
+        </article>
+        <article className="overview-card profile-views-summary-card">
+          <div className="overview-card__copy">
+            <Chip label="6" tone="purple" />
+            Companies
+          </div>
+        </article>
+      </section>
+
+      <section className="profile-viewers-card" aria-labelledby="recent-profile-views-title">
+        <div className="profile-viewers-card__header">
+          <div>
+            <h2 id="recent-profile-views-title">Recent Profile Views</h2>
+            <p>Companies and recruiters who recently opened your profile.</p>
+          </div>
+          <Chip label="Last 7 days" tone="neutral" />
+        </div>
+
+        <div className="profile-viewers-list">
+          {profileViewers.map((viewer) => (
+            <article className="profile-viewer-row" key={viewer.company}>
+              <div className="profile-viewer-row__icon" aria-hidden="true">
+                <Briefcase size={24} weight="regular" />
+              </div>
+              <div className="profile-viewer-row__body">
+                <div className="profile-viewer-row__title">
+                  <h3>{viewer.company}</h3>
+                  <Chip label={viewer.status} tone={viewer.tone} />
+                </div>
+                <p>{viewer.role}</p>
+                <span>{viewer.time}</span>
+              </div>
+              <button className="button button--outline-neutral" type="button">
+                View company
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }
@@ -3323,8 +3581,6 @@ function SettingIcon({ icon: Icon }) {
 }
 
 function AccountSettingPage() {
-  const [profileVisibility, setProfileVisibility] = useState(true);
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
   const [deleteAccountVisible, setDeleteAccountVisible] = useState(true);
   const [deleteRequest, setDeleteRequest] = useState(null);
   const [deleteToastVisible, setDeleteToastVisible] = useState(false);
@@ -3404,51 +3660,12 @@ function AccountSettingPage() {
         </div>
       </section>
 
-      <section className="settings-card" aria-labelledby="privacy-card-title">
-        <h2 id="privacy-card-title">Privacy &amp; Security</h2>
-        <div className="settings-list">
-          <div className="settings-row settings-row--toggle">
-            <div className="settings-row__body">
-              <div className="settings-row__main">
-                <h3>Item</h3>
-                <ToggleSwitch
-                  label="Toggle profile visibility"
-                  checked={profileVisibility}
-                  onChange={() => setProfileVisibility((current) => !current)}
-                />
-              </div>
-              <p className="settings-row__helper">Help text....</p>
-            </div>
-          </div>
-
-          <div className="settings-divider" />
-
-          <div className="settings-row settings-row--toggle">
-            <div className="settings-row__body">
-              <div className="settings-row__main">
-                <h3>Item</h3>
-                <ToggleSwitch
-                  label="Toggle two-factor authentication"
-                  checked={twoFactorAuth}
-                  onChange={() => setTwoFactorAuth((current) => !current)}
-                />
-              </div>
-              <p className="settings-row__helper">Help text....</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="settings-card contact-card" aria-labelledby="contact-card-title">
         <h2 id="contact-card-title">Contact Us</h2>
         <div className="contact-list">
           <p>
             <SettingIcon icon={MapPin} />
             <span>123 Sukhumvit Road, Bangkok, Thailand</span>
-          </p>
-          <p>
-            <SettingIcon icon={Phone} />
-            <span>099-1234-5678</span>
           </p>
           <p>
             <SettingIcon icon={EnvelopeSimple} />
@@ -3480,6 +3697,9 @@ function App() {
   const [activePage, setActivePage] = useState(() => getCurrentAppPage());
   const [editProfileTab, setEditProfileTab] = useState(() => getEditProfileTabFromLocation());
   const profileActive = activePage === 'profile' || activePage === 'edit-profile';
+  const aiInterviewActive = activePage === 'ai-interview';
+  const assessmentsActive = activePage === 'assessments';
+  const profileViewsActive = activePage === 'profile-views';
   const accountSettingActive = activePage === 'account-setting';
 
   function navigateToDashboard() {
@@ -3490,6 +3710,21 @@ function App() {
   function navigateToProfile() {
     setActivePage('profile');
     window.history.pushState(null, '', profilePath);
+  }
+
+  function navigateToAiInterview() {
+    setActivePage('ai-interview');
+    window.history.pushState(null, '', aiInterviewPath);
+  }
+
+  function navigateToAssessments() {
+    setActivePage('assessments');
+    window.history.pushState(null, '', assessmentsPath);
+  }
+
+  function navigateToProfileViews() {
+    setActivePage('profile-views');
+    window.history.pushState(null, '', profileViewsPath);
   }
 
   function navigateToAccountSetting() {
@@ -3512,6 +3747,21 @@ function App() {
   function handleProfileClick(event) {
     event?.preventDefault();
     navigateToProfile();
+  }
+
+  function handleAiInterviewClick(event) {
+    event?.preventDefault();
+    navigateToAiInterview();
+  }
+
+  function handleAssessmentsClick(event) {
+    event?.preventDefault();
+    navigateToAssessments();
+  }
+
+  function handleProfileViewsClick(event) {
+    event?.preventDefault();
+    navigateToProfileViews();
   }
 
   function handleAccountSettingClick(event) {
@@ -3562,18 +3812,30 @@ function App() {
     <div className="app-shell">
       <SideMenu
         profileActive={profileActive}
+        aiInterviewActive={aiInterviewActive}
+        assessmentsActive={assessmentsActive}
+        profileViewsActive={profileViewsActive}
         accountSettingActive={accountSettingActive}
         onDashboardClick={handleDashboardClick}
         onProfileClick={handleProfileClick}
+        onAiInterviewClick={handleAiInterviewClick}
+        onAssessmentsClick={handleAssessmentsClick}
+        onProfileViewsClick={handleProfileViewsClick}
         onAccountSettingClick={handleAccountSettingClick}
       />
       <SideMenuMb
         open={mobileMenuOpen}
         profileActive={profileActive}
+        aiInterviewActive={aiInterviewActive}
+        assessmentsActive={assessmentsActive}
+        profileViewsActive={profileViewsActive}
         accountSettingActive={accountSettingActive}
         onClose={() => setMobileMenuOpen(false)}
         onDashboardClick={handleDashboardClick}
         onProfileClick={handleProfileClick}
+        onAiInterviewClick={handleAiInterviewClick}
+        onAssessmentsClick={handleAssessmentsClick}
+        onProfileViewsClick={handleProfileViewsClick}
         onAccountSettingClick={handleAccountSettingClick}
       />
 
@@ -3605,6 +3867,12 @@ function App() {
           <EditProfilePage initialTab={editProfileTab} onClose={navigateToProfile} />
         ) : activePage === 'profile' ? (
           <ProfilePage onEditProfile={navigateToEditProfile} />
+        ) : activePage === 'ai-interview' ? (
+          <AiInterviewPage />
+        ) : activePage === 'assessments' ? (
+          <AssessmentsPage />
+        ) : activePage === 'profile-views' ? (
+          <ProfileViewsPage />
         ) : activePage === 'account-setting' ? (
           <AccountSettingPage />
         ) : (
