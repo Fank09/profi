@@ -9,6 +9,7 @@ import {
   User,
   X,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
 import { LogoProfi } from '../logo-profi';
 import { SideMenuLink } from '../side-menu-link';
 
@@ -21,9 +22,29 @@ const mobileLinks = [
   { title: 'Account Setting', icon: NutIcon },
 ];
 
-export function SideMenuMb({ open, profileActive = false, onClose, onDashboardClick }) {
+export function SideMenuMb({
+  open,
+  profileActive = false,
+  accountSettingActive = false,
+  onClose,
+  onDashboardClick,
+  onProfileClick,
+  onAccountSettingClick,
+}) {
+  const [activeLanguage, setActiveLanguage] = useState('TH');
+
   function handleDashboardClick(event) {
     onDashboardClick?.(event);
+    onClose();
+  }
+
+  function handleProfileClick(event) {
+    onProfileClick?.(event);
+    onClose();
+  }
+
+  function handleAccountSettingClick(event) {
+    onAccountSettingClick?.(event);
     onClose();
   }
 
@@ -49,8 +70,22 @@ export function SideMenuMb({ open, profileActive = false, onClose, onDashboardCl
             <SideMenuLink
               key={link.title}
               {...link}
-              active={link.title === 'Profile' ? profileActive : link.title === 'Dashboard' && !profileActive}
-              onClick={link.title === 'Dashboard' ? handleDashboardClick : onClose}
+              active={
+                link.title === 'Profile'
+                  ? profileActive
+                  : link.title === 'Account Setting'
+                    ? accountSettingActive
+                    : link.title === 'Dashboard' && !profileActive && !accountSettingActive
+              }
+              onClick={
+                link.title === 'Dashboard'
+                  ? handleDashboardClick
+                  : link.title === 'Profile'
+                    ? handleProfileClick
+                    : link.title === 'Account Setting'
+                      ? handleAccountSettingClick
+                      : onClose
+              }
             />
           ))}
         </nav>
@@ -60,8 +95,17 @@ export function SideMenuMb({ open, profileActive = false, onClose, onDashboardCl
             <span className="language-switcher__icon">
               <GlobeSimple size={24} weight="regular" />
             </span>
-            <span className="language-switcher__pill language-switcher__pill--active">TH</span>
-            <span className="language-switcher__pill">EN</span>
+            {['TH', 'EN'].map((language) => (
+              <button
+                className={`language-switcher__pill${activeLanguage === language ? ' language-switcher__pill--active' : ''}`}
+                type="button"
+                aria-pressed={activeLanguage === language}
+                key={language}
+                onClick={() => setActiveLanguage(language)}
+              >
+                {language}
+              </button>
+            ))}
           </div>
 
           <a className="nav-item nav-item--signout" href="#sign-out" onClick={onClose}>

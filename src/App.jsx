@@ -28,8 +28,12 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { Chip } from './components/chip';
+import { DeleteConfirmationModal } from './components/delete-confirmation-modal';
+import { DiscardChangesModal } from './components/discard-changes-modal';
+import { SaveToast } from './components/save-toast';
 import { SideMenu } from './components/side-menu';
 import { SideMenuMb } from './components/side-menu-mb';
+import { ToggleSwitch } from './components/toggle-switch';
 
 const avatarUrl = 'https://www.figma.com/api/mcp/asset/ef459c2a-bea2-4e86-8f0c-436f8d5fdcef';
 
@@ -105,6 +109,81 @@ const editProfileFields = [
 
 const genderOptions = ['Male', 'Female', 'Non-binary', 'Prefer not to say'];
 const drivingLicenseOptions = ['None', 'Car', 'Motorcycle', 'Heavy Vehicle'];
+const educationLevelOptions = [
+  'Bachlor Degree',
+  'Master Degree',
+  'PHD',
+  'Diploma',
+  'High School',
+  'Associate Degree',
+  'Professional Certificate',
+  'Vocational Certificate',
+  'Postgraduate Diploma',
+  'none',
+];
+const englishLevelOptions = ['Basic', 'Conversational', 'Professional Working', 'Fluent', 'Native'];
+const languageCertificationLanguageOptions = ['Japanese', 'French', 'Thai', 'Chinese', 'Italian'];
+const languageCertificationLevelOptions = ['Basic', 'Conversational', 'Fluent', 'Native'];
+const industryOptions = [
+  'Engineering',
+  'Technology',
+  'Finance',
+  'Healthcare',
+  'Education',
+  'Retail',
+  'Manufacturing',
+  'Hospitality',
+  'Media',
+  'Telecommunications',
+];
+const roleCategoryOptions = [
+  'Product Design',
+  'UX/UI Design',
+  'Software Engineering',
+  'Data & Analytics',
+  'Marketing',
+  'Sales',
+  'Operations',
+  'Human Resources',
+  'Finance',
+  'Customer Success',
+];
+const subRoleOptions = [
+  'Product Designer',
+  'UX Researcher',
+  'UI Designer',
+  'Frontend Developer',
+  'Backend Developer',
+  'Data Analyst',
+  'Product Manager',
+  'Brand Designer',
+  'Marketing Specialist',
+  'Project Manager',
+];
+const workLocationOptions = [
+  'Bangkok',
+  'Chonburi',
+  'Rayong',
+  'Chiang Mai',
+  'Phuket',
+  'Khon Kaen',
+  'Remote',
+  'Singapore',
+  'Tokyo',
+  'Hong Kong',
+];
+const employmentTypeOptions = [
+  'Full-time',
+  'Part-time',
+  'Contract',
+  'Freelance',
+  'Internship',
+  'Temporary',
+  'Project-based',
+  'Consultant',
+  'Apprenticeship',
+  'Volunteer',
+];
 
 const professionalSummary =
   'Creative digital designer with experience in UI/UX, branding, and visual design across web and mobile platforms. Skilled at turning complex ideas into clean, user-friendly experiences with a strong eye for detail, usability, and modern aesthetics.';
@@ -139,13 +218,38 @@ const editSkillTags = [
   'Claude',
 ];
 
+const initialPortfolioLinks = [{ id: 'portfolio-1', value: 'https://myportonline.com' }];
+const portfolioUrlErrorMessage = 'Please enter a valid URL link.';
+
+function isValidUrlLink(value) {
+  const trimmedValue = value.trim();
+  if (!trimmedValue) {
+    return true;
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function getPortfolioUrlError(value) {
+  return isValidUrlLink(value) ? '' : portfolioUrlErrorMessage;
+}
+
+function isBlank(value) {
+  return !String(value ?? '').trim();
+}
+
 const educationEditRows = [
   {
     title: "Master's Degree of Multimedia",
     meta: 'Faculty of Technology • Wardiere University',
     period: '2006 - 2010',
     fields: [
-      { label: 'Education Level', required: true, value: "Master's Degree" },
+      { label: 'Education Level', required: true, type: 'select', value: 'Master Degree', options: educationLevelOptions },
       { label: 'Institution / University', required: true, value: 'Wardiere University' },
       { label: 'Faculty', value: 'Faculty of Technology' },
       { label: 'Field of Study / Major', value: 'Multimedia' },
@@ -165,11 +269,17 @@ const educationEditRows = [
 ];
 
 const languageProficiencyFields = [
-  { label: 'English Level', required: true, value: 'Fluent' },
+  { label: 'English Level', required: true, type: 'select', value: 'Fluent', options: englishLevelOptions },
   { label: 'TOEIC Score', value: '990' },
 ];
 
-const editableLanguages = ['Japanese Conversational', 'French Fluent', 'Thai Native', 'Chinese Basic', 'Korean Professional Working'];
+const editableLanguages = [
+  { id: 'language-1', language: 'Japanese', level: 'Conversational' },
+  { id: 'language-2', language: 'French', level: 'Fluent' },
+  { id: 'language-3', language: 'Thai', level: 'Native' },
+  { id: 'language-4', language: 'Chinese', level: 'Basic' },
+  { id: 'language-5', language: 'Korean', level: 'Professional Working' },
+];
 
 const languageCertificationRows = [
   {
@@ -264,7 +374,7 @@ const jobPreferenceSelectFields = [
     label: 'Preferred Sub Role Category',
     helper: 'Select all that apply',
     chips: ['Engineering', 'Sales', 'Other'],
-    options: ['Engineering', 'Sales', 'Other', 'Technology', 'Finance', 'Design', 'Marketing', 'Product'],
+    options: ['Engineering', 'Sales', 'Other', ...roleCategoryOptions],
     moreCount: 5,
   },
   {
@@ -272,14 +382,14 @@ const jobPreferenceSelectFields = [
     required: true,
     helper: 'Select at least 1 preferred work location.',
     chips: ['Bangkok', 'Chonburi', 'Rayong'],
-    options: ['Bangkok', 'Chonburi', 'Rayong', 'Chiang Mai', 'Phuket', 'Remote', 'Singapore', 'Tokyo'],
+    options: workLocationOptions,
     moreCount: 5,
   },
   {
     label: 'Preferred Industry',
     helper: 'Select at least 1 industry.',
     chips: ['Engineering', 'Sales', 'Other'],
-    options: ['Engineering', 'Sales', 'Other', 'Technology', 'Finance', 'Healthcare', 'Education', 'Retail'],
+    options: ['Other', ...industryOptions],
     moreCount: 5,
   },
 ];
@@ -342,7 +452,7 @@ const educationHistory = [
     duration: '5 yr',
     open: true,
     meta: [
-      { label: 'Education Level', value: "Master's Degree" },
+      { label: 'Education Level', value: 'Master Degree' },
       { label: 'Field of Study / Major', value: 'Multimedia' },
       { label: 'GPAX', value: '4.00' },
     ],
@@ -364,7 +474,7 @@ const educationHistory = [
     faculty: 'Faculty of Arts - Chulalongkorn University',
     period: '2000 - 2004',
     meta: [
-      { label: 'Education Level', value: "Bachelor's Degree" },
+      { label: 'Education Level', value: 'Bachlor Degree' },
       { label: 'Field of Study / Major', value: 'Arts' },
       { label: 'GPAX', value: '3.78' },
     ],
@@ -453,10 +563,56 @@ const sectionCopyByTab = {
 
 const appBasePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const dashboardPath = `${appBasePath || ''}/`;
+const profilePath = `${appBasePath || ''}/profile`;
+const accountSettingPath = `${appBasePath || ''}/account-setting`;
 const editProfilePath = `${appBasePath || ''}/edit-profile`;
+const editProfileTabSlugs = {
+  'Basic Info': 'basic-info',
+  'Work Experience': 'work-experience',
+  Education: 'education',
+  'Job Preferences': 'job-preferences',
+};
+const editProfileTabsBySlug = Object.entries(editProfileTabSlugs).reduce((tabsBySlug, [tab, slug]) => {
+  tabsBySlug[slug] = tab;
+  return tabsBySlug;
+}, {});
 
 function isEditProfilePath() {
   return window.location.pathname.replace(/\/$/, '') === editProfilePath.replace(/\/$/, '');
+}
+
+function isProfilePath() {
+  return window.location.pathname.replace(/\/$/, '') === profilePath.replace(/\/$/, '');
+}
+
+function isAccountSettingPath() {
+  return window.location.pathname.replace(/\/$/, '') === accountSettingPath.replace(/\/$/, '');
+}
+
+function getCurrentAppPage() {
+  if (isEditProfilePath()) {
+    return 'edit-profile';
+  }
+
+  if (isProfilePath()) {
+    return 'profile';
+  }
+
+  if (isAccountSettingPath()) {
+    return 'account-setting';
+  }
+
+  return 'dashboard';
+}
+
+function getEditProfilePath(tab = 'Basic Info') {
+  const slug = editProfileTabSlugs[tab] || editProfileTabSlugs['Basic Info'];
+  return `${editProfilePath}?tab=${slug}`;
+}
+
+function getEditProfileTabFromLocation() {
+  const tabSlug = new URLSearchParams(window.location.search).get('tab');
+  return editProfileTabsBySlug[tabSlug] || 'Basic Info';
 }
 
 function getTabIcon(index) {
@@ -585,17 +741,26 @@ function TextInput({
   label,
   required = false,
   value,
+  name,
   helper,
   icon: Icon,
   suffix,
   placeholder,
   disabled = false,
   datePicker = false,
+  error,
+  onValueChange,
+  onEnter,
 }) {
   const inputLabel = label || placeholder || value || 'Text input';
   const [inputValue, setInputValue] = useState(value || '');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const inputRef = useRef(null);
+  const hasError = Boolean(error);
+
+  useEffect(() => {
+    setInputValue(value || '');
+  }, [value]);
 
   useEffect(() => {
     if (disabled) {
@@ -615,28 +780,140 @@ function TextInput({
     <div className="edit-field">
       {label ? <FieldLabel required={required}>{label}</FieldLabel> : null}
       <div
-        className={`edit-input${disabled ? ' edit-input--disabled' : ''}${datePicker ? ' edit-input--date' : ''}`}
+        className={`edit-input${disabled ? ' edit-input--disabled' : ''}${datePicker ? ' edit-input--date' : ''}${hasError ? ' edit-input--error' : ''}`}
         onClick={openDatePicker}
       >
         {Icon ? <Icon size={20} weight="regular" /> : null}
         <input
           ref={inputRef}
+          name={name}
           value={inputValue}
           placeholder={placeholder}
           aria-label={inputLabel}
+          aria-invalid={hasError || undefined}
           disabled={disabled}
           readOnly={datePicker}
-          onChange={(event) => setInputValue(event.target.value)}
+          onChange={(event) => {
+            setInputValue(event.target.value);
+            onValueChange?.(event.target.value);
+          }}
           onFocus={openDatePicker}
+          onKeyDown={(event) => {
+            if (!onEnter || event.key !== 'Enter' || event.nativeEvent.isComposing) {
+              return;
+            }
+
+            event.preventDefault();
+            const shouldClear = onEnter(inputValue);
+            if (shouldClear) {
+              setInputValue('');
+              onValueChange?.('');
+            }
+          }}
         />
         {suffix ? <span className="edit-input__suffix">{suffix}</span> : null}
         {datePickerOpen ? (
           <DatePickerPopover
             onSelect={(selectedDate) => {
               setInputValue(selectedDate);
+              onValueChange?.(selectedDate);
               setDatePickerOpen(false);
             }}
           />
+        ) : null}
+      </div>
+      {error ? (
+        <p className="edit-field__helper edit-field__helper--error">{error}</p>
+      ) : helper ? (
+        <p className="edit-field__helper">{helper}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function SelectInput({
+  label,
+  required = false,
+  value,
+  options = ['Japanese', 'Thai', 'American', 'British'],
+  placeholder,
+  helper,
+  onValueChange,
+}) {
+  const [selectedValue, setSelectedValue] = useState(value ?? (placeholder ? '' : options[0] || ''));
+  const [open, setOpen] = useState(false);
+  const selectRef = useRef(null);
+  const selectedLabel = selectedValue || placeholder || 'Select option';
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (!selectRef.current?.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  function selectOption(option) {
+    setSelectedValue(option);
+    onValueChange?.(option);
+    setOpen(false);
+  }
+
+  return (
+    <div className="edit-field">
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <div className="edit-select-wrapper" ref={selectRef}>
+        <button
+          className={`edit-select-control${selectedValue ? '' : ' edit-select-control--placeholder'}`}
+          type="button"
+          role="combobox"
+          aria-label={label}
+          aria-expanded={open}
+          aria-controls={`${label.replace(/\s+/g, '-').toLowerCase()}-dropdown`}
+          onClick={() => setOpen((currentOpen) => !currentOpen)}
+        >
+          <span className="edit-select__value">{selectedLabel}</span>
+          <CaretDown className="edit-select-control__icon" size={18} weight="regular" aria-hidden="true" />
+        </button>
+        {open ? (
+          <div
+            className="edit-select-dropdown"
+            id={`${label.replace(/\s+/g, '-').toLowerCase()}-dropdown`}
+            role="listbox"
+            aria-label={`${label} options`}
+          >
+            {options.map((option) => (
+              <button
+                className={`edit-select-dropdown__option${selectedValue === option ? ' edit-select-dropdown__option--selected' : ''}`}
+                type="button"
+                role="option"
+                aria-selected={selectedValue === option}
+                key={option}
+                onClick={() => selectOption(option)}
+              >
+                <span>{option}</span>
+                {selectedValue === option ? <Check size={14} weight="bold" /> : null}
+              </button>
+            ))}
+          </div>
         ) : null}
       </div>
       {helper ? <p className="edit-field__helper">{helper}</p> : null}
@@ -644,31 +921,37 @@ function TextInput({
   );
 }
 
-function SelectInput({ label, value, options = ['Japanese', 'Thai', 'American', 'British'] }) {
-  return (
-    <div className="edit-field">
-      <FieldLabel>{label}</FieldLabel>
-      <div className="edit-select-control">
-        <select className="edit-select" defaultValue={value} aria-label={label}>
-          {options.map((option) => (
-            <option value={option} key={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        <CaretDown className="edit-select-control__icon" size={18} weight="regular" aria-hidden="true" />
-      </div>
-    </div>
-  );
-}
+function TextAreaInput({ label, required = false, value = '', helper, limit = 1000, onValueChange }) {
+  const [textValue, setTextValue] = useState(value);
+  const characterCount = textValue.length;
+  const overLimitCount = characterCount - limit;
+  const overLimit = overLimitCount > 0;
+  const displayedCharacterCount = overLimit ? -overLimitCount : characterCount;
+  const counterId = `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-character-count`;
 
-function TextAreaInput({ label, required = false, value, helper }) {
   return (
     <div className="edit-field edit-field--full">
       <FieldLabel required={required}>{label}</FieldLabel>
       {helper ? <p className="edit-field__helper edit-field__helper--before">{helper}</p> : null}
-      <textarea aria-label={label} defaultValue={value} maxLength={1000} />
-      <span className="edit-character-count">0/1000</span>
+      <div className={`edit-textarea-control${overLimit ? ' edit-textarea-control--error' : ''}`}>
+        <textarea
+          aria-label={label}
+          aria-describedby={counterId}
+          aria-invalid={overLimit}
+          value={textValue}
+          onChange={(event) => {
+            setTextValue(event.target.value);
+            onValueChange?.(event.target.value);
+          }}
+        />
+      </div>
+      <span
+        className={`edit-character-count${overLimit ? ' edit-character-count--error' : ''}`}
+        id={counterId}
+      >
+        <span className="edit-character-count__current">{displayedCharacterCount}</span>
+        <span className="edit-character-count__limit"> / {limit}</span>
+      </span>
     </div>
   );
 }
@@ -709,7 +992,7 @@ function EditableDetailsCard({ children, className = '' }) {
   return <article className={`edit-details-card${className ? ` ${className}` : ''}`}>{children}</article>;
 }
 
-function EditActionMenu({ label }) {
+function EditActionMenu({ label, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -768,6 +1051,7 @@ function EditActionMenu({ label }) {
             onClick={(event) => {
               event.stopPropagation();
               setOpen(false);
+              onDelete?.();
             }}
           >
             <Trash size={16} weight="regular" />
@@ -821,19 +1105,19 @@ function EditableItemExpandedDetails({ item, type = 'default' }) {
           label="Experience Industry"
           helper="Select all that apply"
           chips={['Engineering', 'Sales', 'Other']}
-          moreCount={5}
+          options={['Other', ...industryOptions]}
         />
         <MultiSelectInput
           label="Role Category"
           helper="Select all that apply"
           chips={['Technology', 'Finance', 'Other']}
-          moreCount={5}
+          options={['Other', ...roleCategoryOptions]}
         />
         <MultiSelectInput
           label="Subroles"
           helper="Filtered by role category above"
           chips={['Civil Engineer', 'Developer']}
-          moreCount={5}
+          options={subRoleOptions}
         />
         <div className="edit-form-grid">
           <TextInput label="Start Date" value="Sep 2025" icon={CalendarBlank} datePicker />
@@ -858,9 +1142,13 @@ function EditableItemExpandedDetails({ item, type = 'default' }) {
     return (
       <div className="edit-list-item__details">
         <div className="edit-form-grid">
-          {item.fields.map((field) => (
-            <TextInput key={field.label} {...field} />
-          ))}
+          {item.fields.map((field) =>
+            field.type === 'select' ? (
+              <SelectInput key={field.label} {...field} />
+            ) : (
+              <TextInput key={field.label} {...field} />
+            ),
+          )}
         </div>
         {item.awards ? <TextAreaInput label="Awards and Activities" value={item.awards} /> : null}
         {item.description ? <TextAreaInput label="Description" value={item.description} /> : null}
@@ -897,6 +1185,7 @@ function EditableListItem({
   description,
   expanded = false,
   onToggle,
+  onDelete,
 }) {
   const item = { title, meta, period, fields, awards, description };
 
@@ -926,7 +1215,7 @@ function EditableListItem({
           {meta ? <p>{meta}</p> : null}
           {period ? <p>{period}</p> : null}
         </div>
-        <EditActionMenu label={title} />
+        <EditActionMenu label={title} onDelete={onDelete} />
       </div>
       {expanded ? (
         <div onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
@@ -937,9 +1226,9 @@ function EditableListItem({
   );
 }
 
-function AddTextLink({ children }) {
+function AddTextLink({ children, disabled = false, onClick }) {
   return (
-    <button className="text-link edit-add-link" type="button">
+    <button className="text-link edit-add-link" type="button" disabled={disabled} onClick={onClick}>
       <Plus size={16} weight="regular" />
       {children}
     </button>
@@ -962,47 +1251,150 @@ function SelectChipField({ label, required, helper, options, selected, onToggle 
   );
 }
 
-function MultiSelectInput({ label, required = false, chips, options, helper }) {
-  const dropdownOptions = options || chips;
+function MultiSelectInput({ label, required = false, chips = [], options, helper, onSelectionChange }) {
+  const dropdownOptions = Array.from(new Set(options || chips));
   const [selectedChips, setSelectedChips] = useState(chips);
   const [open, setOpen] = useState(false);
-  const visibleChipLimit = 3;
+  const [searchValue, setSearchValue] = useState('');
+  const dropdownRef = useRef(null);
+  const inputRef = useRef(null);
+  const [visibleChipLimit, setVisibleChipLimit] = useState(3);
   const visibleChips = selectedChips.slice(0, visibleChipLimit);
   const hiddenChipCount = Math.max(selectedChips.length - visibleChipLimit, 0);
+  const filteredOptions = dropdownOptions.filter((option) =>
+    option.toLowerCase().includes(searchValue.trim().toLowerCase()),
+  );
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (!dropdownRef.current?.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    function estimateChipWidth(chip) {
+      return Math.min(220, chip.length * 7 + 42);
+    }
+
+    function updateVisibleChipLimit() {
+      const inputWidth = inputRef.current?.getBoundingClientRect().width || 0;
+
+      if (!inputWidth) {
+        return;
+      }
+
+      if (window.matchMedia('(max-width: 560px)').matches) {
+        setVisibleChipLimit(Math.min(3, selectedChips.length || 3));
+        return;
+      }
+
+      const reservedWidth = 56;
+      const overflowCounterWidth = selectedChips.length > 1 ? 44 : 0;
+      const availableWidth = Math.max(0, inputWidth - reservedWidth);
+      let usedWidth = 0;
+      let nextVisibleCount = 0;
+
+      selectedChips.forEach((chip, index) => {
+        const remainingCount = selectedChips.length - (index + 1);
+        const projectedWidth = usedWidth + estimateChipWidth(chip) + (index > 0 ? 4 : 0);
+        const reservedOverflowWidth = remainingCount > 0 ? overflowCounterWidth : 0;
+
+        if (projectedWidth + reservedOverflowWidth <= availableWidth) {
+          usedWidth = projectedWidth;
+          nextVisibleCount = index + 1;
+        }
+      });
+
+      setVisibleChipLimit(Math.max(1, nextVisibleCount || Math.min(selectedChips.length, 1)));
+    }
+
+    updateVisibleChipLimit();
+
+    const resizeObserver = new ResizeObserver(updateVisibleChipLimit);
+    if (inputRef.current) {
+      resizeObserver.observe(inputRef.current);
+    }
+
+    window.addEventListener('resize', updateVisibleChipLimit);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateVisibleChipLimit);
+    };
+  }, [selectedChips]);
 
   function toggleOption(option) {
-    setSelectedChips((currentChips) =>
-      currentChips.includes(option)
+    setSelectedChips((currentChips) => {
+      const nextChips = currentChips.includes(option)
         ? currentChips.filter((chip) => chip !== option)
-        : [...currentChips, option],
-    );
+        : [...currentChips, option];
+
+      onSelectionChange?.(nextChips);
+      return nextChips;
+    });
   }
 
   function removeChip(option) {
-    setSelectedChips((currentChips) => currentChips.filter((chip) => chip !== option));
+    setSelectedChips((currentChips) => {
+      const nextChips = currentChips.filter((chip) => chip !== option);
+      onSelectionChange?.(nextChips);
+      return nextChips;
+    });
   }
 
   return (
     <div className="edit-field edit-field--full">
       <FieldLabel required={required}>{label}</FieldLabel>
-      <div className="edit-select-chip-input" role="combobox" aria-label={label} aria-expanded={open}>
+      <div className="edit-select-chip-wrapper" ref={dropdownRef}>
+      <div
+        ref={inputRef}
+        className="edit-select-chip-input"
+        role="combobox"
+        aria-label={label}
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+      >
         <span className="edit-select-chip-input__chips">
-          {visibleChips.map((chip) => (
-            <span className="mini-tag mini-tag--blue" key={chip}>
-              {chip}
-              <button
-                className="mini-tag__remove"
-                type="button"
-                aria-label={`Remove ${chip}`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  removeChip(chip);
-                }}
-              >
-                <X size={10} weight="regular" aria-hidden="true" />
-              </button>
-            </span>
-          ))}
+          {visibleChips.length ? (
+            visibleChips.map((chip) => (
+              <span className="mini-tag mini-tag--blue" key={chip}>
+                {chip}
+                <button
+                  className="mini-tag__remove"
+                  type="button"
+                  aria-label={`Remove ${chip}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    removeChip(chip);
+                  }}
+                >
+                  <X size={10} weight="regular" aria-hidden="true" />
+                </button>
+              </span>
+            ))
+          ) : (
+            <span className="edit-select-chip-input__placeholder">Select options</span>
+          )}
           {hiddenChipCount ? <span className="edit-select-chip-input__more">+ {hiddenChipCount}</span> : null}
         </span>
         <button
@@ -1010,13 +1402,25 @@ function MultiSelectInput({ label, required = false, chips, options, helper }) {
           type="button"
           aria-label={`Toggle ${label} options`}
           aria-expanded={open}
-          onClick={() => setOpen((currentOpen) => !currentOpen)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setOpen((currentOpen) => !currentOpen);
+          }}
         >
           <CaretDown size={18} weight="regular" aria-hidden="true" />
         </button>
+      </div>
         {open ? (
           <div className="edit-select-dropdown" role="listbox" aria-label={`${label} options`}>
-            {dropdownOptions.map((option) => (
+            <div className="edit-select-dropdown__search">
+              <input
+                value={searchValue}
+                placeholder="Type to search"
+                aria-label={`Search ${label} options`}
+                onChange={(event) => setSearchValue(event.target.value)}
+              />
+            </div>
+            {filteredOptions.map((option) => (
               <button
                 className={`edit-select-dropdown__option${selectedChips.includes(option) ? ' edit-select-dropdown__option--selected' : ''}`}
                 type="button"
@@ -1029,6 +1433,9 @@ function MultiSelectInput({ label, required = false, chips, options, helper }) {
                 {selectedChips.includes(option) ? <Check size={14} weight="bold" /> : null}
               </button>
             ))}
+            {!filteredOptions.length ? (
+              <p className="edit-select-dropdown__empty">No options found</p>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -1043,6 +1450,17 @@ function BasicInfoEditForm({
   selectedLicenses,
   toggleLicense,
 }) {
+  const resumeInputRef = useRef(null);
+  const [resumeFileName, setResumeFileName] = useState('Marie CV.pdf');
+
+  function handleResumeFileChange(event) {
+    const selectedFile = event.target.files?.[0];
+
+    if (selectedFile) {
+      setResumeFileName(selectedFile.name);
+    }
+  }
+
   return (
     <>
       <EditSectionTitle heading="Basic Information" description="กรุณากรอกข้อมูลส่วนตัว" />
@@ -1058,11 +1476,18 @@ function BasicInfoEditForm({
         <div className="edit-field">
           <FieldLabel required>Resume File</FieldLabel>
           <div className="edit-resume-row">
-            <Chip label="Marie CV.pdf" tone="blue" icon={FileText} className="edit-resume-chip" />
-            <button className="text-link" type="button">
+            <Chip label={resumeFileName} tone="blue" icon={FileText} className="edit-resume-chip" />
+            <button className="text-link" type="button" onClick={() => resumeInputRef.current?.click()}>
               <UploadSimple size={16} weight="regular" />
               Reupload Resume
             </button>
+            <input
+              ref={resumeInputRef}
+              className="visually-hidden"
+              type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleResumeFileChange}
+            />
           </div>
         </div>
       </div>
@@ -1124,11 +1549,600 @@ function BasicInfoEditForm({
   );
 }
 
+const emptyWorkExperienceForm = {
+  jobTitle: '',
+  companyName: '',
+  responsibility: '',
+  industry: '',
+  roleCategory: '',
+  subroles: '',
+  startDate: '',
+  endDate: '',
+  currentlyWorking: false,
+};
+
+function AddWorkExperienceForm({ onCancel, onAdd }) {
+  const [formValues, setFormValues] = useState(emptyWorkExperienceForm);
+  const addDisabled =
+    isBlank(formValues.jobTitle) ||
+    isBlank(formValues.companyName) ||
+    isBlank(formValues.responsibility) ||
+    isBlank(formValues.industry) ||
+    isBlank(formValues.roleCategory) ||
+    isBlank(formValues.subroles) ||
+    isBlank(formValues.startDate) ||
+    (!formValues.currentlyWorking && isBlank(formValues.endDate));
+
+  function updateField(field, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
+  }
+
+  function handleAdd() {
+    if (addDisabled) {
+      return;
+    }
+
+    onAdd(formValues);
+  }
+
+  return (
+    <div className="edit-list-item edit-list-item--card edit-add-work-card">
+      <div className="edit-form-grid">
+        <TextInput
+          label="Job Title"
+          placeholder="e.g. Senior Marketing Manager"
+          value={formValues.jobTitle}
+          onValueChange={(value) => updateField('jobTitle', value)}
+        />
+        <TextInput
+          label="Company Name"
+          placeholder="e.g. ABC Company Limited"
+          value={formValues.companyName}
+          onValueChange={(value) => updateField('companyName', value)}
+        />
+      </div>
+
+      <TextAreaInput
+        label="Responsibility"
+        value={formValues.responsibility}
+        onValueChange={(value) => updateField('responsibility', value)}
+      />
+
+      <MultiSelectInput
+        label="Experience Industry"
+        helper="Select all that apply"
+        chips={formValues.industry ? formValues.industry.split(', ') : []}
+        options={industryOptions}
+        onSelectionChange={(values) => updateField('industry', values.join(', '))}
+      />
+      <MultiSelectInput
+        label="Role Category"
+        helper="Select all that apply"
+        chips={formValues.roleCategory ? formValues.roleCategory.split(', ') : []}
+        options={roleCategoryOptions}
+        onSelectionChange={(values) => updateField('roleCategory', values.join(', '))}
+      />
+      <MultiSelectInput
+        label="Subroles"
+        helper="Filtered by role category above"
+        chips={formValues.subroles ? formValues.subroles.split(', ') : []}
+        options={subRoleOptions}
+        onSelectionChange={(values) => updateField('subroles', values.join(', '))}
+      />
+
+      <div className="edit-form-grid">
+        <TextInput
+          label="Start Date"
+          placeholder="Start Date"
+          icon={CalendarBlank}
+          datePicker
+          value={formValues.startDate}
+          onValueChange={(value) => updateField('startDate', value)}
+        />
+        <TextInput
+          label="End Date"
+          placeholder="End Date"
+          icon={CalendarBlank}
+          datePicker={!formValues.currentlyWorking}
+          disabled={formValues.currentlyWorking}
+          value={formValues.endDate}
+          onValueChange={(value) => updateField('endDate', value)}
+        />
+      </div>
+
+      <DesignCheckbox
+        label="I currently work here"
+        checked={formValues.currentlyWorking}
+        onChange={(checked) => updateField('currentlyWorking', checked)}
+      />
+
+      <div className="edit-add-work-card__actions">
+        <button className="button button--outline-neutral button--compact" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="button button--primary button--compact"
+          type="button"
+          disabled={addDisabled}
+          onClick={handleAdd}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const emptyEducationForm = {
+  degreeTitle: '',
+  institution: '',
+  faculty: '',
+  educationLevel: educationLevelOptions[0],
+  gpax: '',
+  major: '',
+  startYear: '',
+  graduateYear: '',
+  awards: '',
+  description: '',
+};
+
+function AddEducationForm({ onCancel, onAdd }) {
+  const [formValues, setFormValues] = useState(emptyEducationForm);
+  const addDisabled =
+    isBlank(formValues.degreeTitle) ||
+    isBlank(formValues.institution) ||
+    isBlank(formValues.faculty) ||
+    isBlank(formValues.educationLevel) ||
+    isBlank(formValues.gpax) ||
+    isBlank(formValues.major) ||
+    isBlank(formValues.startYear) ||
+    isBlank(formValues.graduateYear) ||
+    isBlank(formValues.awards) ||
+    isBlank(formValues.description);
+
+  function updateField(field, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
+  }
+
+  return (
+    <div className="edit-list-item edit-list-item--card edit-add-work-card">
+      <div className="edit-form-grid">
+        <TextInput
+          label="Degree Title"
+          placeholder="e.g. Bachelor's Degree in Engineering"
+          value={formValues.degreeTitle}
+          onValueChange={(value) => updateField('degreeTitle', value)}
+        />
+        <TextInput
+          label="Institute / University (แนะนำให้กรอก)"
+          placeholder="e.g. Chulalongkorn University"
+          value={formValues.institution}
+          onValueChange={(value) => updateField('institution', value)}
+        />
+        <TextInput
+          label="Faculty"
+          placeholder="Faculty of Technology"
+          value={formValues.faculty}
+          onValueChange={(value) => updateField('faculty', value)}
+        />
+        <div className="edit-form-grid edit-form-grid--nested">
+          <SelectInput
+            label="Education Level"
+            options={educationLevelOptions}
+            value={formValues.educationLevel}
+            onValueChange={(value) => updateField('educationLevel', value)}
+          />
+          <TextInput
+            label="GPAX"
+            placeholder="e.g. 3.50"
+            value={formValues.gpax}
+            onValueChange={(value) => updateField('gpax', value)}
+          />
+        </div>
+        <TextInput
+          label="Field of Study / Major (แนะนำให้กรอก)"
+          placeholder="e.g. Faculty of Engineering"
+          value={formValues.major}
+          onValueChange={(value) => updateField('major', value)}
+        />
+        <div className="edit-form-grid edit-form-grid--nested">
+          <TextInput
+            label="Start Year"
+            placeholder="Select Year"
+            icon={CalendarBlank}
+            datePicker
+            value={formValues.startYear}
+            onValueChange={(value) => updateField('startYear', value)}
+          />
+          <TextInput
+            label="Graduate Year"
+            placeholder="Select Year"
+            icon={CalendarBlank}
+            datePicker
+            value={formValues.graduateYear}
+            onValueChange={(value) => updateField('graduateYear', value)}
+          />
+        </div>
+      </div>
+
+      <TextAreaInput
+        label="Awards and Activities"
+        value={formValues.awards}
+        onValueChange={(value) => updateField('awards', value)}
+      />
+      <TextAreaInput
+        label="Educational Description"
+        value={formValues.description}
+        onValueChange={(value) => updateField('description', value)}
+      />
+
+      <div className="edit-add-work-card__actions">
+        <button className="button button--outline-neutral button--compact" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="button button--primary button--compact"
+          type="button"
+          disabled={addDisabled}
+          onClick={() => {
+            if (!addDisabled) {
+              onAdd(formValues);
+            }
+          }}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const emptyLanguageCertificationForm = {
+  certification: '',
+  yearObtained: '',
+};
+
+function AddLanguageCertificationForm({ onCancel, onAdd }) {
+  const [formValues, setFormValues] = useState(emptyLanguageCertificationForm);
+  const addDisabled = isBlank(formValues.certification) || isBlank(formValues.yearObtained);
+
+  function updateField(field, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
+  }
+
+  return (
+    <div className="edit-list-item edit-list-item--card edit-add-work-card">
+      <div className="edit-form-grid">
+        <TextInput
+          label="Certification / License"
+          placeholder="e.g. IELTS"
+          value={formValues.certification}
+          onValueChange={(value) => updateField('certification', value)}
+        />
+        <TextInput
+          label="Year Obtained"
+          placeholder="Select Year"
+          icon={CalendarBlank}
+          datePicker
+          value={formValues.yearObtained}
+          onValueChange={(value) => updateField('yearObtained', value)}
+        />
+      </div>
+
+      <div className="edit-add-work-card__actions">
+        <button className="button button--outline-neutral button--compact" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="button button--primary button--compact"
+          type="button"
+          disabled={addDisabled}
+          onClick={() => {
+            if (!addDisabled) {
+              onAdd(formValues);
+            }
+          }}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const emptyOtherCertificationForm = {
+  certification: '',
+  issuedBy: '',
+  yearObtained: '',
+};
+
+function AddOtherCertificationForm({ onCancel, onAdd }) {
+  const [formValues, setFormValues] = useState(emptyOtherCertificationForm);
+  const addDisabled =
+    isBlank(formValues.certification) || isBlank(formValues.issuedBy) || isBlank(formValues.yearObtained);
+
+  function updateField(field, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
+  }
+
+  return (
+    <div className="edit-list-item edit-list-item--card edit-add-work-card">
+      <div className="edit-form-grid">
+        <TextInput
+          label="Certification / License"
+          placeholder="e.g. Certificate of Multimedia"
+          value={formValues.certification}
+          onValueChange={(value) => updateField('certification', value)}
+        />
+        <TextInput
+          label="Issued By"
+          placeholder="e.g. Box Hill Institute of Arts"
+          value={formValues.issuedBy}
+          onValueChange={(value) => updateField('issuedBy', value)}
+        />
+        <TextInput
+          label="Year Obtained"
+          placeholder="Select Year"
+          icon={CalendarBlank}
+          datePicker
+          value={formValues.yearObtained}
+          onValueChange={(value) => updateField('yearObtained', value)}
+        />
+      </div>
+
+      <div className="edit-add-work-card__actions">
+        <button className="button button--outline-neutral button--compact" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="button button--primary button--compact"
+          type="button"
+          disabled={addDisabled}
+          onClick={() => {
+            if (!addDisabled) {
+              onAdd(formValues);
+            }
+          }}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const emptyOtherLanguageForm = {
+  language: '',
+  level: '',
+};
+
+function AddOtherLanguageForm({ onCancel, onAdd }) {
+  const [formValues, setFormValues] = useState(emptyOtherLanguageForm);
+  const addDisabled = isBlank(formValues.language) || isBlank(formValues.level);
+
+  function updateField(field, value) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
+  }
+
+  return (
+    <div className="edit-list-item edit-list-item--card edit-add-work-card edit-add-language-card">
+      <div className="edit-form-grid">
+        <SelectInput
+          label="Language"
+          options={languageCertificationLanguageOptions}
+          value={formValues.language}
+          placeholder="Select language"
+          onValueChange={(value) => updateField('language', value)}
+        />
+        <SelectInput
+          label="Proficiency Level"
+          options={languageCertificationLevelOptions}
+          value={formValues.level}
+          placeholder="Select proficiency level"
+          onValueChange={(value) => updateField('level', value)}
+        />
+      </div>
+
+      <div className="edit-add-work-card__actions">
+        <button className="button button--outline-neutral button--compact" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="button button--primary button--compact"
+          type="button"
+          disabled={addDisabled}
+          onClick={() => onAdd(formValues)}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AddPortfolioLinkForm({ onCancel, onAdd }) {
+  const [portfolioUrl, setPortfolioUrl] = useState('');
+  const portfolioUrlError = getPortfolioUrlError(portfolioUrl);
+  const addDisabled = isBlank(portfolioUrl) || Boolean(portfolioUrlError);
+
+  function handleAdd() {
+    if (addDisabled) {
+      return;
+    }
+
+    onAdd(portfolioUrl.trim());
+    setPortfolioUrl('');
+  }
+
+  return (
+    <div className="edit-list-item edit-list-item--card edit-add-work-card edit-add-portfolio-card">
+      <TextInput
+        label="Portfolio URL"
+        placeholder="https://portfolio.com"
+        value={portfolioUrl}
+        error={portfolioUrlError}
+        onValueChange={setPortfolioUrl}
+      />
+
+      <div className="edit-add-work-card__actions">
+        <button className="button button--outline-neutral button--compact" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          className="button button--primary button--compact"
+          type="button"
+          disabled={addDisabled}
+          onClick={handleAdd}
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function WorkExperienceEditForm() {
   const [expandedWorkItem, setExpandedWorkItem] = useState(null);
+  const [workExperienceItems, setWorkExperienceItems] = useState(editableWorkExperienceRows);
+  const [addingWorkExperience, setAddingWorkExperience] = useState(false);
+  const [skillTags, setSkillTags] = useState(editSkillTags);
+  const [removingSkillTags, setRemovingSkillTags] = useState([]);
+  const [skillInputValue, setSkillInputValue] = useState('');
+  const [portfolioLinks, setPortfolioLinks] = useState(initialPortfolioLinks);
+  const [addingPortfolioLink, setAddingPortfolioLink] = useState(false);
+  const [deleteRequest, setDeleteRequest] = useState(null);
+  const [deleteToastVisible, setDeleteToastVisible] = useState(false);
+  const skillLimitReached = skillTags.length >= 50;
+
+  function requestDelete(itemLabel, onConfirm) {
+    setDeleteRequest({ itemLabel, onConfirm });
+  }
+
+  function confirmDelete() {
+    deleteRequest?.onConfirm();
+    setDeleteRequest(null);
+    setDeleteToastVisible(true);
+  }
+
+  useEffect(() => {
+    if (!deleteToastVisible) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setDeleteToastVisible(false);
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [deleteToastVisible]);
+
+  function addSkillTag(rawSkill) {
+    const nextSkill = rawSkill.trim();
+    if (!nextSkill) {
+      return false;
+    }
+
+    const skillExists = skillTags.some((tag) => tag.toLowerCase() === nextSkill.toLowerCase());
+    if (skillExists) {
+      return true;
+    }
+
+    if (skillLimitReached) {
+      return false;
+    }
+
+    setSkillTags((currentTags) => [...currentTags, nextSkill]);
+    return true;
+  }
+
+  function removeSkillTag(tagToRemove) {
+    setSkillTags((currentTags) => currentTags.filter((tag) => tag !== tagToRemove));
+  }
+
+  function removeSkillTagWithEasing(tagToRemove) {
+    if (removingSkillTags.includes(tagToRemove)) {
+      return;
+    }
+
+    setRemovingSkillTags((currentTags) => [...currentTags, tagToRemove]);
+    window.setTimeout(() => {
+      removeSkillTag(tagToRemove);
+      setRemovingSkillTags((currentTags) => currentTags.filter((tag) => tag !== tagToRemove));
+    }, 180);
+  }
+
+  function submitSkillTag(rawSkill = skillInputValue) {
+    const shouldClear = addSkillTag(rawSkill);
+    if (shouldClear) {
+      setSkillInputValue('');
+    }
+
+    return shouldClear;
+  }
+
+  function updatePortfolioLink(idToUpdate, value) {
+    setPortfolioLinks((currentLinks) =>
+      currentLinks.map((link) => (link.id === idToUpdate ? { ...link, value } : link)),
+    );
+  }
+
+  function removePortfolioLink(idToRemove) {
+    setPortfolioLinks((currentLinks) => currentLinks.filter((link) => link.id !== idToRemove));
+  }
+
+  function addPortfolioLink(url) {
+    setPortfolioLinks((currentLinks) => [
+      ...currentLinks,
+      { id: `portfolio-${Date.now()}`, value: url },
+    ]);
+    setAddingPortfolioLink(false);
+  }
+
+  function handleAddWorkExperience(formValues) {
+    const title = formValues.jobTitle.trim() || 'New Work Experience';
+    const startDate = formValues.startDate.trim() || 'Start Date';
+    const endDate = formValues.currentlyWorking ? 'Current' : formValues.endDate.trim() || 'End Date';
+    const newItem = {
+      id: `work-${Date.now()}`,
+      title,
+      meta: `${startDate} - ${endDate}`,
+      fields: [
+        { label: 'Job Title', value: formValues.jobTitle },
+        { label: 'Company Name', value: formValues.companyName },
+        { label: 'Experience Industry', value: formValues.industry },
+        { label: 'Role Category', value: formValues.roleCategory },
+        { label: 'Subroles', value: formValues.subroles },
+        { label: 'Start Date', value: startDate },
+        { label: 'End Date', value: endDate },
+      ],
+      description: formValues.responsibility,
+    };
+
+    setWorkExperienceItems((currentItems) => [newItem, ...currentItems]);
+    setExpandedWorkItem(null);
+    setAddingWorkExperience(false);
+  }
 
   return (
     <>
+      {deleteToastVisible ? <SaveToast message="Item deleted successfully." tone="error" /> : null}
       <EditSectionTitle heading="Career & Work Experience" description="กรุณากรอกข้อมูลส่วนตัว" />
 
       <EditableDetailsCard className="edit-details-card--padded">
@@ -1148,20 +2162,42 @@ function WorkExperienceEditForm() {
       <section className="edit-section-block">
         <EditBlockTitle heading="Work Experience" description="Lorem" />
         <div className="edit-list">
-          {editableWorkExperienceRows.map((item) => (
+          {workExperienceItems.map((item) => (
             <EditableListItem
-              key={item.title}
+              key={item.id || item.title}
               card
               detailType="work"
               expanded={expandedWorkItem === item.title}
               onToggle={() =>
                 setExpandedWorkItem((currentItem) => (currentItem === item.title ? null : item.title))
               }
+              onDelete={() =>
+                requestDelete(item.title, () => {
+                  setWorkExperienceItems((currentItems) =>
+                    currentItems.filter((currentItem) => (currentItem.id || currentItem.title) !== (item.id || item.title)),
+                  );
+                  setExpandedWorkItem(null);
+                })
+              }
               {...item}
             />
           ))}
         </div>
-        <AddTextLink>add another work experience</AddTextLink>
+        {addingWorkExperience ? (
+          <AddWorkExperienceForm
+            onCancel={() => setAddingWorkExperience(false)}
+            onAdd={handleAddWorkExperience}
+          />
+        ) : null}
+        <AddTextLink
+          disabled={addingWorkExperience}
+          onClick={() => {
+            setExpandedWorkItem(null);
+            setAddingWorkExperience(true);
+          }}
+        >
+          add another work experience
+        </AddTextLink>
       </section>
 
       <section className="edit-section-block">
@@ -1169,88 +2205,326 @@ function WorkExperienceEditForm() {
         <EditableDetailsCard className="edit-chip-card">
           <h4>Added Skills</h4>
           <div className="edit-chip-card__chips">
-            {editSkillTags.map((tag) => (
-              <span className="mini-tag mini-tag--blue" key={tag}>
+            {skillTags.map((tag) => (
+              <span className={`mini-tag skill-chip${removingSkillTags.includes(tag) ? ' chip--removing' : ''}`} key={tag}>
                 {tag}
-                <X size={10} weight="regular" aria-hidden="true" />
+                <button
+                  className="mini-tag__remove"
+                  type="button"
+                  aria-label={`Remove ${tag}`}
+                  onClick={() => removeSkillTagWithEasing(tag)}
+                >
+                  <X size={10} weight="regular" aria-hidden="true" />
+                </button>
               </span>
             ))}
           </div>
-          <span className="edit-chip-card__count">8 / 50 skills</span>
-          <TextInput label="" placeholder="Search or type a skill" helper="Type a skill and press Enter" />
+          <span className="edit-chip-card__count">{skillTags.length} / 50 skills</span>
+          <div className="skill-input-row">
+            <TextInput
+              label=""
+              value={skillInputValue}
+              placeholder="Search or type a skill"
+              helper="Type a skill and press Enter"
+              disabled={skillLimitReached}
+              onValueChange={setSkillInputValue}
+              onEnter={submitSkillTag}
+            />
+            <button
+              className="button button--primary button--tiny"
+              type="button"
+              disabled={skillLimitReached}
+              onClick={() => submitSkillTag()}
+            >
+              Add
+            </button>
+          </div>
         </EditableDetailsCard>
       </section>
 
       <section className="edit-section-block">
         <EditBlockTitle heading="Portfolio URL" description="เพิ่มทักษะที่เกี่ยวข้อง" />
         <EditableDetailsCard>
-          <div className="edit-url-row">
-            <TextInput label="" value="https://myportonline.com" />
-            <button className="edit-icon-action" type="button" aria-label="Remove portfolio link">
-              <Trash size={18} weight="regular" />
-            </button>
+          <div className="edit-url-list">
+            {portfolioLinks.map((link, index) => (
+              <div className="edit-url-row" key={link.id}>
+                <TextInput
+                  label=""
+                  value={link.value}
+                  placeholder="https://portfolio.com"
+                  error={getPortfolioUrlError(link.value)}
+                  onValueChange={(value) => updatePortfolioLink(link.id, value)}
+                />
+                <button
+                  className="edit-icon-action"
+                  type="button"
+                  aria-label={`Remove portfolio link ${index + 1}`}
+                  onClick={() => requestDelete(link.value || `Portfolio link ${index + 1}`, () => removePortfolioLink(link.id))}
+                >
+                  <Trash size={18} weight="regular" />
+                </button>
+              </div>
+            ))}
           </div>
-          <AddTextLink>add another portfolio link</AddTextLink>
+          {addingPortfolioLink ? (
+            <AddPortfolioLinkForm
+              onCancel={() => setAddingPortfolioLink(false)}
+              onAdd={addPortfolioLink}
+            />
+          ) : null}
+          <AddTextLink disabled={addingPortfolioLink} onClick={() => setAddingPortfolioLink(true)}>
+            add another portfolio link
+          </AddTextLink>
         </EditableDetailsCard>
       </section>
+      {deleteRequest ? (
+        <DeleteConfirmationModal
+          itemLabel={deleteRequest.itemLabel}
+          onBack={() => setDeleteRequest(null)}
+          onDelete={confirmDelete}
+        />
+      ) : null}
     </>
   );
 }
 
 function EducationEditForm() {
   const [expandedEducationItem, setExpandedEducationItem] = useState(null);
+  const [educationItems, setEducationItems] = useState(educationEditRows);
+  const [addingEducation, setAddingEducation] = useState(false);
+  const [otherLanguages, setOtherLanguages] = useState(editableLanguages);
+  const [removingOtherLanguageIds, setRemovingOtherLanguageIds] = useState([]);
+  const [addingOtherLanguage, setAddingOtherLanguage] = useState(false);
+  const [languageCertificationItems, setLanguageCertificationItems] = useState(
+    languageCertificationRows.map((item, index) => ({
+      ...item,
+      id: `language-certification-${index + 1}`,
+    })),
+  );
+  const [otherCertificationItems, setOtherCertificationItems] = useState(
+    otherCertificationRows.map((item, index) => ({
+      ...item,
+      id: `other-certification-${index + 1}`,
+    })),
+  );
+  const [addingLanguageCertification, setAddingLanguageCertification] = useState(false);
+  const [addingOtherCertification, setAddingOtherCertification] = useState(false);
   const [expandedLanguageCertification, setExpandedLanguageCertification] = useState(null);
   const [expandedOtherCertification, setExpandedOtherCertification] = useState(null);
+  const [deleteRequest, setDeleteRequest] = useState(null);
+  const [deleteToastVisible, setDeleteToastVisible] = useState(false);
+
+  function requestDelete(itemLabel, onConfirm) {
+    setDeleteRequest({ itemLabel, onConfirm });
+  }
+
+  function confirmDelete() {
+    deleteRequest?.onConfirm();
+    setDeleteRequest(null);
+    setDeleteToastVisible(true);
+  }
+
+  useEffect(() => {
+    if (!deleteToastVisible) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setDeleteToastVisible(false);
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [deleteToastVisible]);
+
+  function handleAddEducation(formValues) {
+    const title = formValues.degreeTitle.trim() || 'New Education';
+    const institution = formValues.institution.trim() || 'Institution / University';
+    const startYear = formValues.startYear.trim() || 'Start Year';
+    const graduateYear = formValues.graduateYear.trim() || 'Graduate Year';
+    const newItem = {
+      id: `education-${Date.now()}`,
+      title,
+      meta: institution,
+      period: `${startYear} - ${graduateYear}`,
+      fields: [
+        { label: 'Degree Title', value: formValues.degreeTitle },
+        { label: 'Institution / University', value: formValues.institution },
+        { label: 'Faculty', value: formValues.faculty },
+        { label: 'Education Level', type: 'select', value: formValues.educationLevel, options: educationLevelOptions },
+        { label: 'GPAX', value: formValues.gpax },
+        { label: 'Field of Study / Major', value: formValues.major },
+        { label: 'Start Year', value: startYear },
+        { label: 'Graduate Year', value: graduateYear },
+      ],
+      awards: formValues.awards,
+      description: formValues.description,
+    };
+
+    setEducationItems((currentItems) => [newItem, ...currentItems]);
+    setExpandedEducationItem(null);
+    setAddingEducation(false);
+  }
+
+  function removeOtherLanguage(languageIdToRemove) {
+    setOtherLanguages((currentLanguages) =>
+      currentLanguages.filter((languageItem) => languageItem.id !== languageIdToRemove),
+    );
+  }
+
+  function removeOtherLanguageWithEasing(languageIdToRemove) {
+    if (removingOtherLanguageIds.includes(languageIdToRemove)) {
+      return;
+    }
+
+    setRemovingOtherLanguageIds((currentIds) => [...currentIds, languageIdToRemove]);
+    window.setTimeout(() => {
+      removeOtherLanguage(languageIdToRemove);
+      setRemovingOtherLanguageIds((currentIds) => currentIds.filter((id) => id !== languageIdToRemove));
+    }, 180);
+  }
+
+  function handleAddOtherLanguage(formValues) {
+    setOtherLanguages((currentLanguages) => [
+      ...currentLanguages,
+      {
+        id: `language-${Date.now()}`,
+        language: formValues.language,
+        level: formValues.level,
+      },
+    ]);
+    setAddingOtherLanguage(false);
+  }
+
+  function handleAddLanguageCertification(formValues) {
+    const certification = formValues.certification.trim();
+    const yearObtained = formValues.yearObtained.trim();
+    const newItem = {
+      id: `language-certification-${Date.now()}`,
+      title: certification,
+      meta: `Year Obtained: ${yearObtained}`,
+      fields: [
+        { label: 'Certification / License', required: true, value: certification },
+        { label: 'Year Obtained', value: yearObtained },
+      ],
+    };
+
+    setLanguageCertificationItems((currentItems) => [newItem, ...currentItems]);
+    setExpandedLanguageCertification(null);
+    setAddingLanguageCertification(false);
+  }
+
+  function handleAddOtherCertification(formValues) {
+    const certification = formValues.certification.trim();
+    const issuedBy = formValues.issuedBy.trim();
+    const yearObtained = formValues.yearObtained.trim();
+    const newItem = {
+      id: `other-certification-${Date.now()}`,
+      title: certification,
+      meta: issuedBy,
+      period: `Year Obtained: ${yearObtained}`,
+      fields: [
+        { label: 'Certification / License', required: true, value: certification },
+        { label: 'Issued By', value: issuedBy },
+        { label: 'Year Obtained', value: yearObtained },
+      ],
+    };
+
+    setOtherCertificationItems((currentItems) => [newItem, ...currentItems]);
+    setExpandedOtherCertification(null);
+    setAddingOtherCertification(false);
+  }
 
   return (
     <>
+      {deleteToastVisible ? <SaveToast message="Item deleted successfully." tone="error" /> : null}
       <EditSectionTitle heading="Education & Certifications" description="กรุณากรอกข้อมูลด้านประวัติการศึกษา" />
 
       <section className="edit-section-block">
-        <EditableDetailsCard>
-          <EditableListItem
-            {...educationEditRows[0]}
-            expanded={expandedEducationItem === educationEditRows[0].title}
-            onToggle={() =>
-              setExpandedEducationItem((currentItem) =>
-                currentItem === educationEditRows[0].title ? null : educationEditRows[0].title,
-              )
-            }
+        {educationItems.map((item) => {
+          const itemKey = item.id || item.title;
+
+          return (
+            <EditableDetailsCard key={itemKey}>
+              <EditableListItem
+                {...item}
+                expanded={expandedEducationItem === itemKey}
+                onToggle={() =>
+                  setExpandedEducationItem((currentItem) =>
+                    currentItem === itemKey ? null : itemKey,
+                  )
+                }
+                onDelete={() =>
+                  requestDelete(item.title, () => {
+                    setEducationItems((currentItems) =>
+                      currentItems.filter((currentItem) => (currentItem.id || currentItem.title) !== itemKey),
+                    );
+                    setExpandedEducationItem(null);
+                  })
+                }
+              />
+            </EditableDetailsCard>
+          );
+        })}
+        {addingEducation ? (
+          <AddEducationForm
+            onCancel={() => setAddingEducation(false)}
+            onAdd={handleAddEducation}
           />
-        </EditableDetailsCard>
-        <EditableDetailsCard>
-          <EditableListItem
-            {...educationEditRows[1]}
-            expanded={expandedEducationItem === educationEditRows[1].title}
-            onToggle={() =>
-              setExpandedEducationItem((currentItem) =>
-                currentItem === educationEditRows[1].title ? null : educationEditRows[1].title,
-              )
-            }
-          />
-        </EditableDetailsCard>
-        <AddTextLink>add another education</AddTextLink>
+        ) : null}
+        <AddTextLink
+          disabled={addingEducation}
+          onClick={() => {
+            setExpandedEducationItem(null);
+            setAddingEducation(true);
+          }}
+        >
+          add another education
+        </AddTextLink>
       </section>
 
       <section className="edit-section-block">
         <EditBlockTitle heading="Language Proficiency" description="Lorem" />
         <EditableDetailsCard>
           <div className="edit-form-grid">
-            {languageProficiencyFields.map((field) => (
-              <TextInput key={field.label} {...field} />
-            ))}
+            {languageProficiencyFields.map((field) =>
+              field.type === 'select' ? (
+                <SelectInput key={field.label} {...field} />
+              ) : (
+                <TextInput key={field.label} {...field} />
+              ),
+            )}
           </div>
           <div className="edit-field edit-field--full edit-language-chips-field">
             <FieldLabel>Other Languages</FieldLabel>
-            <div className="edit-chip-card__chips">
-              {editableLanguages.map((language) => (
-                <span className="mini-tag mini-tag--blue" key={language}>
-                  {language}
-                  <X size={10} weight="regular" aria-hidden="true" />
+            <div className="edit-chip-card__chips other-language-chip-list">
+              {otherLanguages.map(({ id, language, level }) => (
+                <span
+                  className={`mini-tag user-fill-data-chip other-language-chip${removingOtherLanguageIds.includes(id) ? ' chip--removing' : ''}`}
+                  key={id}
+                >
+                  {language} / {level}
+                  <button
+                    className="mini-tag__remove"
+                    type="button"
+                    aria-label={`Remove ${language}`}
+                    onClick={() => removeOtherLanguageWithEasing(id)}
+                  >
+                    <X size={10} weight="regular" aria-hidden="true" />
+                  </button>
                 </span>
               ))}
             </div>
-            <AddTextLink>add another language</AddTextLink>
+            {addingOtherLanguage ? (
+              <AddOtherLanguageForm
+                onCancel={() => setAddingOtherLanguage(false)}
+                onAdd={handleAddOtherLanguage}
+              />
+            ) : null}
+            <AddTextLink disabled={addingOtherLanguage} onClick={() => setAddingOtherLanguage(true)}>
+              add another language
+            </AddTextLink>
           </div>
         </EditableDetailsCard>
       </section>
@@ -1259,42 +2533,101 @@ function EducationEditForm() {
         <EditBlockTitle heading="Certifications / Licenses" description="Lorem" />
         <EditBlockTitle heading="Language Certifications" />
         <div className="edit-list">
-          {languageCertificationRows.map((item) => (
-            <EditableListItem
-              key={item.title}
-              card
-              {...item}
-              expanded={expandedLanguageCertification === item.title}
-              onToggle={() =>
-                setExpandedLanguageCertification((currentItem) =>
-                  currentItem === item.title ? null : item.title,
-                )
-              }
-            />
-          ))}
+          {languageCertificationItems.map((item) => {
+            const itemKey = item.id || item.title;
+
+            return (
+              <EditableListItem
+                key={itemKey}
+                card
+                {...item}
+                expanded={expandedLanguageCertification === itemKey}
+                onToggle={() =>
+                  setExpandedLanguageCertification((currentItem) =>
+                    currentItem === itemKey ? null : itemKey,
+                  )
+                }
+                onDelete={() =>
+                  requestDelete(item.title, () => {
+                    setLanguageCertificationItems((currentItems) =>
+                      currentItems.filter((currentItem) => (currentItem.id || currentItem.title) !== itemKey),
+                    );
+                    setExpandedLanguageCertification(null);
+                  })
+                }
+              />
+            );
+          })}
         </div>
-        <AddTextLink>add another language certification</AddTextLink>
+        {addingLanguageCertification ? (
+          <AddLanguageCertificationForm
+            onCancel={() => setAddingLanguageCertification(false)}
+            onAdd={handleAddLanguageCertification}
+          />
+        ) : null}
+        <AddTextLink
+          disabled={addingLanguageCertification}
+          onClick={() => {
+            setExpandedLanguageCertification(null);
+            setAddingLanguageCertification(true);
+          }}
+        >
+          add another language certification
+        </AddTextLink>
       </section>
 
       <section className="edit-section-block">
         <EditBlockTitle heading="Other Certifications / Licenses" />
         <div className="edit-list">
-          {otherCertificationRows.map((item) => (
-            <EditableListItem
-              key={item.title}
-              card
-              {...item}
-              expanded={expandedOtherCertification === item.title}
-              onToggle={() =>
-                setExpandedOtherCertification((currentItem) =>
-                  currentItem === item.title ? null : item.title,
-                )
-              }
-            />
-          ))}
+          {otherCertificationItems.map((item) => {
+            const itemKey = item.id || item.title;
+
+            return (
+              <EditableListItem
+                key={itemKey}
+                card
+                {...item}
+                expanded={expandedOtherCertification === itemKey}
+                onToggle={() =>
+                  setExpandedOtherCertification((currentItem) =>
+                    currentItem === itemKey ? null : itemKey,
+                  )
+                }
+                onDelete={() =>
+                  requestDelete(item.title, () => {
+                    setOtherCertificationItems((currentItems) =>
+                      currentItems.filter((currentItem) => (currentItem.id || currentItem.title) !== itemKey),
+                    );
+                    setExpandedOtherCertification(null);
+                  })
+                }
+              />
+            );
+          })}
         </div>
-        <AddTextLink>add another certification or license</AddTextLink>
+        {addingOtherCertification ? (
+          <AddOtherCertificationForm
+            onCancel={() => setAddingOtherCertification(false)}
+            onAdd={handleAddOtherCertification}
+          />
+        ) : null}
+        <AddTextLink
+          disabled={addingOtherCertification}
+          onClick={() => {
+            setExpandedOtherCertification(null);
+            setAddingOtherCertification(true);
+          }}
+        >
+          add another certification or license
+        </AddTextLink>
       </section>
+      {deleteRequest ? (
+        <DeleteConfirmationModal
+          itemLabel={deleteRequest.itemLabel}
+          onBack={() => setDeleteRequest(null)}
+          onDelete={confirmDelete}
+        />
+      ) : null}
     </>
   );
 }
@@ -1344,48 +2677,8 @@ function JobPreferencesEditForm({ selectedJobPreferences, onToggleJobPreference 
   );
 }
 
-function SaveToast({ message }) {
-  return (
-    <div className="save-toast" role="status" aria-live="polite">
-      <span className="save-toast__content">
-        <CheckCircle size={20} weight="regular" />
-        {message}
-      </span>
-      <X className="save-toast__close" size={16} weight="bold" aria-hidden="true" />
-    </div>
-  );
-}
-
-function DiscardChangesModal({ onClose, onDiscard }) {
-  return (
-    <div className="modal-backdrop" role="presentation">
-      <section className="discard-modal" role="dialog" aria-modal="true" aria-labelledby="discard-modal-title">
-        <button className="discard-modal__close" type="button" aria-label="Close discard dialog" onClick={onClose}>
-          <X size={18} weight="bold" />
-        </button>
-        <div className="discard-modal__icon" aria-hidden="true">
-          <FileText size={34} weight="regular" />
-          <span>!</span>
-        </div>
-        <div className="discard-modal__copy">
-          <h2 id="discard-modal-title">Discard your changes?</h2>
-          <p>Your edits will not be saved if you leave now.</p>
-        </div>
-        <div className="discard-modal__actions">
-          <button className="discard-modal__text-action text-link text-link--black" type="button" onClick={onClose}>
-            Go back
-          </button>
-          <button className="button button--primary" type="button" onClick={onDiscard}>
-            Discard
-          </button>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function EditProfilePage({ onClose }) {
-  const [activeEditTab, setActiveEditTab] = useState('Basic Info');
+function EditProfilePage({ initialTab = 'Basic Info', onClose }) {
+  const [activeEditTab, setActiveEditTab] = useState(initialTab);
   const [selectedGender, setSelectedGender] = useState('Female');
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
@@ -1396,6 +2689,10 @@ function EditProfilePage({ onClose }) {
       return selectedGroups;
     }, {}),
   );
+
+  useEffect(() => {
+    setActiveEditTab(initialTab);
+  }, [initialTab]);
 
   function toggleLicense(option) {
     setSelectedLicenses((currentLicenses) => {
@@ -1543,13 +2840,22 @@ function AiInterviewBanner() {
   );
 }
 
-function ProfileDetails() {
+function ProfileDetails({ onEditProfile }) {
   const [activeTab, setActiveTab] = useState('Basic Info');
   const activeSection = sectionCopyByTab[activeTab];
 
   return (
     <section className="profile-panel" id="profile">
-      <h2>Profile</h2>
+      <div className="profile-panel__header">
+        <h2>Profile</h2>
+        <button className="button button--primary" type="button" onClick={() => onEditProfile?.('Basic Info')}>
+          <span className="button__icon">
+            <PencilSimple size={16} weight="regular" />
+          </span>
+          <span className="button__desktop-label">Edit Profile</span>
+          <span className="button__mobile-label">Edit</span>
+        </button>
+      </div>
       <div className="tab-list" aria-label="Profile sections">
         {tabs.map((tab, index) => (
           <button
@@ -1571,7 +2877,7 @@ function ProfileDetails() {
 
       <div className="section-heading">
         <h3>{activeSection.heading}</h3>
-        <button type="button" aria-label={activeSection.editLabel}>
+        <button type="button" aria-label={activeSection.editLabel} onClick={() => onEditProfile?.(activeTab)}>
           <PencilSimple className="section-heading__icon" size={24} weight="regular" />
         </button>
       </div>
@@ -1748,7 +3054,7 @@ function WorkExperienceDetails() {
                   <h5>{experience.company}</h5>
                   <p>
                     {experience.period}
-                    <Chip label={experience.duration} tone="green" />
+                    <Chip label={experience.duration} tone="blue" className="duration-chip" />
                   </p>
                 </div>
                 {expandedCompany === experience.company ? (
@@ -1794,7 +3100,7 @@ function WorkExperienceDetails() {
         <h4>Skills</h4>
         <div className="skills-box">
           {skillTags.map((tag) => (
-            <span className="mini-tag mini-tag--blue" key={tag}>
+            <span className="mini-tag skill-chip" key={tag}>
               {tag}
             </span>
           ))}
@@ -1838,7 +3144,9 @@ function EducationDetails() {
                   <p>{education.faculty}</p>
                   <p>
                     {education.period}
-                    {education.duration ? <Chip label={education.duration} tone="green" /> : null}
+                    {education.duration ? (
+                      <Chip label={education.duration} tone="blue" className="duration-chip" />
+                    ) : null}
                   </p>
                 </div>
                 {expandedDegree === education.degree ? (
@@ -1892,11 +3200,8 @@ function EducationDetails() {
             <p>Other Languages</p>
             <span className="tag-row language-tags">
               {otherLanguages.map((item) => (
-                <span className="mini-tag language-tag" key={item.language}>
-                  {item.language}
-                  <span className={`language-tag__level language-tag__level--${item.tone}`}>
-                    {item.level}
-                  </span>
+                <span className="mini-tag user-fill-data-chip other-language-chip" key={item.language}>
+                  {item.language} / {item.level}
                 </span>
               ))}
             </span>
@@ -2000,18 +3305,203 @@ function StrengthPanel() {
   );
 }
 
+function ProfilePage({ onEditProfile }) {
+  return (
+    <section className="profile-page" aria-label="Profile preview">
+      <StrengthPanel />
+      <ProfileDetails onEditProfile={onEditProfile} />
+    </section>
+  );
+}
+
+function SettingIcon({ icon: Icon }) {
+  return (
+    <span className="account-setting-icon" aria-hidden="true">
+      <Icon size={16} weight="regular" />
+    </span>
+  );
+}
+
+function AccountSettingPage() {
+  const [profileVisibility, setProfileVisibility] = useState(true);
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  const [deleteAccountVisible, setDeleteAccountVisible] = useState(true);
+  const [deleteRequest, setDeleteRequest] = useState(null);
+  const [deleteToastVisible, setDeleteToastVisible] = useState(false);
+
+  function confirmDelete() {
+    deleteRequest?.onConfirm();
+    setDeleteRequest(null);
+    setDeleteToastVisible(true);
+  }
+
+  useEffect(() => {
+    if (!deleteToastVisible) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setDeleteToastVisible(false);
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [deleteToastVisible]);
+
+  return (
+    <section className="account-setting-page" aria-labelledby="account-setting-title">
+      {deleteToastVisible ? <SaveToast message="Item deleted successfully." tone="error" /> : null}
+      <header className="account-setting-page__header">
+        <h1 id="account-setting-title">Account Setting</h1>
+        <p>Manage your account preference.</p>
+      </header>
+
+      <section className="settings-card account-card" aria-labelledby="account-card-title">
+        <h2 id="account-card-title">Account</h2>
+        <div className="settings-list">
+          <div className="settings-row settings-row--account">
+            <SettingIcon icon={EnvelopeSimple} />
+            <div className="settings-row__body">
+              <div className="settings-row__main">
+                <div>
+                  <h3>Email</h3>
+                  <p className="settings-row__value">marie@email.com</p>
+                </div>
+                <Chip label="Verified" tone="green" icon={Check} className="settings-verified-chip" />
+              </div>
+              <p className="settings-row__helper">This email is linked to your account and cannot be changed.</p>
+            </div>
+          </div>
+
+          {deleteAccountVisible ? (
+            <>
+              <div className="settings-divider" />
+
+              <div className="settings-row settings-row--account">
+                <SettingIcon icon={Trash} />
+                <div className="settings-row__body">
+                  <h3>Delete Your Account</h3>
+                  <button
+                    className="button settings-delete-button"
+                    type="button"
+                    onClick={() =>
+                      setDeleteRequest({
+                        itemLabel: 'Delete Your Account',
+                        onConfirm: () => setDeleteAccountVisible(false),
+                      })
+                    }
+                  >
+                    Delete Account
+                  </button>
+                  <p className="settings-row__helper">
+                    Deleting your account will permanently remove your access and personal information.
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="settings-card" aria-labelledby="privacy-card-title">
+        <h2 id="privacy-card-title">Privacy &amp; Security</h2>
+        <div className="settings-list">
+          <div className="settings-row settings-row--toggle">
+            <div className="settings-row__body">
+              <div className="settings-row__main">
+                <h3>Item</h3>
+                <ToggleSwitch
+                  label="Toggle profile visibility"
+                  checked={profileVisibility}
+                  onChange={() => setProfileVisibility((current) => !current)}
+                />
+              </div>
+              <p className="settings-row__helper">Help text....</p>
+            </div>
+          </div>
+
+          <div className="settings-divider" />
+
+          <div className="settings-row settings-row--toggle">
+            <div className="settings-row__body">
+              <div className="settings-row__main">
+                <h3>Item</h3>
+                <ToggleSwitch
+                  label="Toggle two-factor authentication"
+                  checked={twoFactorAuth}
+                  onChange={() => setTwoFactorAuth((current) => !current)}
+                />
+              </div>
+              <p className="settings-row__helper">Help text....</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="settings-card contact-card" aria-labelledby="contact-card-title">
+        <h2 id="contact-card-title">Contact Us</h2>
+        <div className="contact-list">
+          <p>
+            <SettingIcon icon={MapPin} />
+            <span>123 Sukhumvit Road, Bangkok, Thailand</span>
+          </p>
+          <p>
+            <SettingIcon icon={Phone} />
+            <span>099-1234-5678</span>
+          </p>
+          <p>
+            <SettingIcon icon={EnvelopeSimple} />
+            <span>email@email.com</span>
+          </p>
+        </div>
+        <div className="social-links" aria-label="Social channels">
+          <a className="social-link social-link--facebook" href="#facebook" aria-label="Facebook">
+            f
+          </a>
+          <a className="social-link social-link--line" href="#line" aria-label="LINE">
+            LINE
+          </a>
+        </div>
+      </section>
+      {deleteRequest ? (
+        <DeleteConfirmationModal
+          itemLabel={deleteRequest.itemLabel}
+          onBack={() => setDeleteRequest(null)}
+          onDelete={confirmDelete}
+        />
+      ) : null}
+    </section>
+  );
+}
+
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [editingProfile, setEditingProfile] = useState(() => isEditProfilePath());
+  const [activePage, setActivePage] = useState(() => getCurrentAppPage());
+  const [editProfileTab, setEditProfileTab] = useState(() => getEditProfileTabFromLocation());
+  const profileActive = activePage === 'profile' || activePage === 'edit-profile';
+  const accountSettingActive = activePage === 'account-setting';
 
   function navigateToDashboard() {
-    setEditingProfile(false);
+    setActivePage('dashboard');
     window.history.pushState(null, '', dashboardPath);
   }
 
-  function navigateToEditProfile() {
-    setEditingProfile(true);
-    window.history.pushState(null, '', editProfilePath);
+  function navigateToProfile() {
+    setActivePage('profile');
+    window.history.pushState(null, '', profilePath);
+  }
+
+  function navigateToAccountSetting() {
+    setActivePage('account-setting');
+    window.history.pushState(null, '', accountSettingPath);
+  }
+
+  function navigateToEditProfile(tab = 'Basic Info') {
+    const targetTab = editProfileTabSlugs[tab] ? tab : 'Basic Info';
+    setEditProfileTab(targetTab);
+    setActivePage('edit-profile');
+    window.history.pushState(null, '', getEditProfilePath(targetTab));
   }
 
   function handleDashboardClick(event) {
@@ -2019,9 +3509,20 @@ function App() {
     navigateToDashboard();
   }
 
+  function handleProfileClick(event) {
+    event?.preventDefault();
+    navigateToProfile();
+  }
+
+  function handleAccountSettingClick(event) {
+    event?.preventDefault();
+    navigateToAccountSetting();
+  }
+
   useEffect(() => {
     function handlePopState() {
-      setEditingProfile(isEditProfilePath());
+      setActivePage(getCurrentAppPage());
+      setEditProfileTab(getEditProfileTabFromLocation());
     }
 
     window.addEventListener('popstate', handlePopState);
@@ -2059,12 +3560,21 @@ function App() {
 
   return (
     <div className="app-shell">
-      <SideMenu profileActive={editingProfile} onDashboardClick={handleDashboardClick} />
+      <SideMenu
+        profileActive={profileActive}
+        accountSettingActive={accountSettingActive}
+        onDashboardClick={handleDashboardClick}
+        onProfileClick={handleProfileClick}
+        onAccountSettingClick={handleAccountSettingClick}
+      />
       <SideMenuMb
         open={mobileMenuOpen}
-        profileActive={editingProfile}
+        profileActive={profileActive}
+        accountSettingActive={accountSettingActive}
         onClose={() => setMobileMenuOpen(false)}
         onDashboardClick={handleDashboardClick}
+        onProfileClick={handleProfileClick}
+        onAccountSettingClick={handleAccountSettingClick}
       />
 
       <main className="content" id="dashboard">
@@ -2091,8 +3601,12 @@ function App() {
           <img className="avatar avatar--small" src={avatarUrl} alt="Marie Brown account" />
         </nav>
 
-        {editingProfile ? (
-          <EditProfilePage onClose={navigateToDashboard} />
+        {activePage === 'edit-profile' ? (
+          <EditProfilePage initialTab={editProfileTab} onClose={navigateToProfile} />
+        ) : activePage === 'profile' ? (
+          <ProfilePage onEditProfile={navigateToEditProfile} />
+        ) : activePage === 'account-setting' ? (
+          <AccountSettingPage />
         ) : (
           <>
             <ProfileHero onEditProfile={navigateToEditProfile} />
@@ -2106,7 +3620,7 @@ function App() {
             <AiInterviewBanner />
 
             <div className="profile-layout">
-              <ProfileDetails />
+              <ProfileDetails onEditProfile={navigateToEditProfile} />
               <StrengthPanel />
             </div>
           </>

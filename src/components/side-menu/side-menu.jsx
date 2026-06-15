@@ -9,6 +9,7 @@ import {
   SquaresFour,
   User,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
 import { LogoProfi } from '../logo-profi';
 import { SideMenuLink } from '../side-menu-link';
 
@@ -21,7 +22,15 @@ const links = [
   { title: 'Account Setting', icon: NutIcon },
 ];
 
-export function SideMenu({ profileActive = false, onDashboardClick }) {
+export function SideMenu({
+  profileActive = false,
+  accountSettingActive = false,
+  onDashboardClick,
+  onProfileClick,
+  onAccountSettingClick,
+}) {
+  const [activeLanguage, setActiveLanguage] = useState('TH');
+
   return (
     <aside className="sidebar" aria-label="Primary">
       <div className="sidebar__top">
@@ -36,8 +45,22 @@ export function SideMenu({ profileActive = false, onDashboardClick }) {
           <SideMenuLink
             key={link.title}
             {...link}
-            active={link.title === 'Profile' ? profileActive : link.title === 'Dashboard' && !profileActive}
-            onClick={link.title === 'Dashboard' ? onDashboardClick : undefined}
+            active={
+              link.title === 'Profile'
+                ? profileActive
+                : link.title === 'Account Setting'
+                  ? accountSettingActive
+                  : link.title === 'Dashboard' && !profileActive && !accountSettingActive
+            }
+            onClick={
+              link.title === 'Dashboard'
+                ? onDashboardClick
+                : link.title === 'Profile'
+                  ? onProfileClick
+                  : link.title === 'Account Setting'
+                    ? onAccountSettingClick
+                    : undefined
+            }
           />
         ))}
       </nav>
@@ -47,8 +70,17 @@ export function SideMenu({ profileActive = false, onDashboardClick }) {
           <span className="language-switcher__icon">
             <GlobeSimple size={24} weight="regular" />
           </span>
-          <span className="language-switcher__pill language-switcher__pill--active">TH</span>
-          <span className="language-switcher__pill">EN</span>
+          {['TH', 'EN'].map((language) => (
+            <button
+              className={`language-switcher__pill${activeLanguage === language ? ' language-switcher__pill--active' : ''}`}
+              type="button"
+              aria-pressed={activeLanguage === language}
+              key={language}
+              onClick={() => setActiveLanguage(language)}
+            >
+              {language}
+            </button>
+          ))}
         </div>
 
         <a className="nav-item nav-item--signout" href="#sign-out">
