@@ -35,8 +35,9 @@ import { SaveToast } from './components/save-toast';
 import { SideMenu } from './components/side-menu';
 import { SideMenuMb } from './components/side-menu-mb';
 import { ToggleSwitch } from './components/toggle-switch';
+import profileImage from './assets/profile.png';
 
-const avatarUrl = 'https://www.figma.com/api/mcp/asset/ef459c2a-bea2-4e86-8f0c-436f8d5fdcef';
+const avatarUrl = profileImage;
 
 const overviewCards = [
   {
